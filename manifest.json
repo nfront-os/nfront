@@ -2,7 +2,7 @@
 	"name": "nfront",
 	"parts": {
 		"gcc": {
-			"branch": "gpu",
+			"branch": "main",
 			"commit": "83a2ebbd7c6d27738c95dd6c0618da55b7517a7d",
 			"path": "GCC_DIR"
 		},
