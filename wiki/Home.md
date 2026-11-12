@@ -15,7 +15,7 @@ All of it lives in one directory, `~/Devel/nfront`; each part is a git repositor
 | [[Branches]] | branches and how they stack |
 | [[Host-requirements]] | what the Linux host needs |
 | [[Building]] | from a Linux host to an ISO, step by step |
-| [[Using gcc, Rust and Go|Toolchains]] | the toolchains on 9front and from Linux; rebuilding the system with gcc |
+| [Using gcc, Rust and Go](Toolchains) | the toolchains on 9front and from Linux; rebuilding the system with gcc |
 | [[Features]] | what works today, and where |
 
 Licences: the 9front tree holds only permissive code (MIT, BSD, ISC, zlib,
