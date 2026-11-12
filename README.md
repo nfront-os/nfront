@@ -13,13 +13,13 @@ Go for it.  This repository holds what ties the parts together:
   manifest from the parts' heads)
 - `docs/`: `roadmap.md`, `upstream.md` (bringing in 9front), `patches.md`, the plans (`plans/ui`, `plans/gpu`), `review/`
 
-The parts (now beside this repository in ~/Devel, later in ~/Devel/nfront):
+The parts (in ~/Devel/nfront, beside this repository, `dist/`):
 
 | part | what |
 |---|---|
-| `9front` | the tree (branch `ui`); worktrees `9front-gccwt` (gcc), `9front-nix`, `9front-riscv`, `9front-upstream` |
-| `9front-gcc` | gcc 16 and binutils for 9front (cross and native) |
-| `9front-rust` | Rust for 9front |
-| `9front-go` | Go for 9front |
-| `9front-mcp` | MCP server: an agent on Linux works on 9front |
-| `9front-ui/src` | the releases' archives other projects' sources come from (DISTFILES) |
+| `tree` | the 9front tree (branch `ui`); worktrees `tree-gcc` (gcc), `tree-nix`, `tree-riscv`, `tree-upstream` |
+| `toolchain/gcc` | gcc 16 and binutils for 9front (cross and native) |
+| `toolchain/rust` | Rust for 9front |
+| `toolchain/go` | Go for 9front |
+| `tools/mcp` | MCP server: an agent on Linux works on 9front |
+| `distfiles` | the releases' archives other projects' sources come from (DISTFILES) |
