@@ -4,11 +4,8 @@ Everything is cross-built on a Linux host (x86-64). gcc and Rust take hours; the
 
 ## Prerequisites
 
-- gcc, g++, binutils, make, git, bash, python3, go (any recent, for the build tool)
-- QEMU with KVM (guest steps, tests); for the GPU tests a host GPU with
-  `/dev/dri/renderD128` (virtio-gpu venus)
-- [plan9port](https://9fans.github.io/plan9port/) at `../plan9port`
-- for Rust: cargo, cmake, ninja; for the LinuxKPI tools: Linux 7.3.1 and 6.6 sources
+See [[Host-requirements]]: what the host needs for the tree, each toolchain,
+the guest steps and the tests.
 
 ## 0. Layout
 

@@ -13,6 +13,7 @@ All of it lives in one directory, `~/Devel/nfront`; each part is a git repositor
 |---|---|
 | [[Repositories]] | the git repositories and what each holds |
 | [[Branches]] | branches and how they stack |
+| [[Host-requirements]] | what the Linux host needs |
 | [[Building]] | from a Linux host to an ISO, step by step |
 | [[Features]] | what works today, and where |
 
