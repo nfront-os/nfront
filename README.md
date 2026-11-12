@@ -11,7 +11,7 @@ Go for it.  This repository holds what ties the parts together:
   together
 - `bin/`: `status` (each part against the manifest), `pin` (the
   manifest from the parts' heads)
-- `docs/`: the plans (`plans/ui`, `plans/gpu`), the roadmap, reviews
+- `docs/`: `roadmap.md`, `upstream.md` (bringing in 9front), `patches.md`, the plans (`plans/ui`, `plans/gpu`), `review/`
 
 The parts (now beside this repository in ~/Devel, later in ~/Devel/nfront):
 
