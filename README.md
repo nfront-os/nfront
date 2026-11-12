@@ -17,7 +17,7 @@ Go for it.  This repository holds what ties the parts together:
   (its `CLAUDE.md` is a symlink to it)
 - `wiki/`: the English documentation (GitHub wiki format: Home, Repositories,
   Branches, Building, Features)
-- `docs/`: `roadmap.md`, `upstream.md` (bringing in 9front), `patches.md`, the plans (`plans/ui`, `plans/gpu`), `review/`
+- `docs/`: `roadmap.md`, `upstream.md` (bringing in 9front), `patches.md`
 
 The parts (in ~/Devel/nfront, beside this repository, `dist/`):
 

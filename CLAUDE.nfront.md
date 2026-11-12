@@ -19,9 +19,8 @@ it is not a git repository itself, each part is one.
 | `distfiles/` | the releases' archives other projects' sources come from | no (data) |
 | `dist/` | the distribution: `paths.env`, `manifest.json`, `bin/`, `docs/` | yes |
 
-Outside, on purpose: `~/Devel/nfront-attic` (old plan folders, chats,
-downloads with GPL sources) and `~/Devel/a private bundle (outside nfront)`
-(the old git history with GPL code). Never move them into nfront, never put
+Outside, on purpose: `~/Devel/nfront-attic` (the plans and chats, downloads
+with GPL sources, a bundle of the old git history with GPL code). Never move them into nfront, never put
 the attic into git: a copy of nfront must carry no GPL material.
 
 ## Paths
@@ -46,7 +45,8 @@ the attic into git: a copy of nfront must carry no GPL material.
   (`build.exe -D` per arch), optionally the amd64 CD with Rust and Go.
 
 Docs: `dist/docs/roadmap.md` (phases, 1.0 criteria), `upstream.md` (bringing
-in 9front: front → gcc → main), `patches.md`, `plans/ui`, `plans/gpu`.
+in 9front: front → gcc → main), `patches.md`; the plans (German) are kept
+outside git in `~/Devel/nfront-attic/dist-docs`.
 Logs of the work, in German: `tree/MEMORY.md`, `toolchain/*/NOTES.md`.
 
 ## Rules

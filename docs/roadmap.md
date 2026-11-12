@@ -1,6 +1,6 @@
 # nfront: Weg zur Distribution
 
-Ausgangspunkt ist die Bewertung in `review/comment.md`. Abweichend von deren
+Ausgangspunkt war eine Bewertung des Projekts. Abweichend von deren
 Empfehlung (Overlay auf 9front, Upstream-Merge als Option) ist nfront eine
 **eigene Distribution** (Entscheidung 2026-11-12): eigener Name, eigene
 Replica und ISOs. 9front `front` bleibt die Quelle, die regelmäßig
