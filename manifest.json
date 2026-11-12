@@ -42,8 +42,8 @@
 			"path": "RUST_DIR/rust"
 		},
 		"tree": {
-			"branch": "ui",
-			"commit": "837c9a527c8685fb6ee4f2b0962b67e53c706a70",
+			"branch": "main",
+			"commit": "e1953313ca3343d2c2b2ed71c519271f9b56dc35",
 			"path": "TREE"
 		},
 		"tree-gcc": {

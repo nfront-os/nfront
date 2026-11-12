@@ -17,7 +17,7 @@ The parts (in ~/Devel/nfront, beside this repository, `dist/`):
 
 | part | what |
 |---|---|
-| `tree` | the 9front tree (branch `ui`); worktrees `tree-gcc` (gcc), `tree-nix`, `tree-riscv`, `tree-upstream` |
+| `tree` | the 9front tree (branch `main`); worktrees `tree-gcc` (gcc), `tree-nix`, `tree-riscv`, `tree-upstream` |
 | `toolchain/gcc` | gcc 16 and binutils for 9front (cross and native) |
 | `toolchain/rust` | Rust for 9front |
 | `toolchain/go` | Go for 9front |
