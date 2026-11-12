@@ -109,33 +109,30 @@ screen (`monitor`, default `vesa`):
 | `vesa` | the firmware's VESA modes; works on every PC, no acceleration |
 | `i915` | Intel graphics through the GPU stack (`aux/i915`, gpu(4)) |
 | `amdgpu` | AMD graphics through the GPU stack (`aux/amdgpu`, gpu(4)) |
+| `virtiogpu` | QEMU's virtio-gpu (`aux/virtiogpu`, gpu(4)) |
 
-With `i915` or `amdgpu` the driver sets up the screen itself; if it has no
-picture after 60 seconds, the screen falls back to VESA. Its log goes to the
-boot stick's ESP as `i915boot.log` or `amdgpuboot.log`. Details: gpu(4).
+With `i915`, `amdgpu` or `virtiogpu` the driver sets up the screen itself; if
+it has no picture after 60 seconds, the screen falls back to VESA. Its log
+goes to the boot stick's ESP as `i915boot.log`, `amdgpuboot.log` or
+`virtiogpuboot.log`. Details: gpu(4).
 
 ### In QEMU
 
-| QEMU display | Answer, driver |
+| QEMU display | Answer |
 |---|---|
 | `-vga std` (QEMU's default) | `vesa` |
-| `-vga none -device virtio-vga` | `vesa` at boot; for virtio-gpu start `aux/virtiogpu` (below) |
-| `-vga none -device virtio-gpu-gl-pci,…` | 3D: Vulkan (venus) and GL (virgl) on the host's GPU, through `aux/virtiogpu` |
+| `-vga none -device virtio-vga` | `virtiogpu` |
+| `-vga none -device virtio-gpu-gl-pci,…` | `virtiogpu`: 3D, Vulkan (venus) and GL (virgl) on the host's GPU |
 
-`aux/virtiogpu` drives virtio-gpu (gpu(4)), but it isn't one of the boot
-question's answers yet. Start it in an rc before the graphics, as the tests
-do:
+For 2D use `virtio-vga`, not `virtio-gpu-pci`: it also has a VGA screen, so the
+boot loader and the boot questions are visible. `aux/virtiogpu` drives both.
 
-```rc
-aux/virtiogpu
-bind -a '#i' /dev
-bind -a '#m' /dev
-aux/mouse ps2
-rio
+For example, the CD with virtio-gpu:
+
+```sh
+qemu-system-x86_64 -enable-kvm -m 4096 -cdrom ~/.cache/9front-cli/9front.amd64.iso \
+	-vga none -device virtio-vga
 ```
-
-Use `virtio-vga`, not `virtio-gpu-pci`: it also has a VGA screen, so the boot
-loader and the boot questions are visible. `aux/virtiogpu` finds both devices.
 
 3D needs a GPU on the host with Vulkan, KVM, and QEMU with virglrenderer.
 These are the options `tree/tests/gpu/run.sh` boots with:
@@ -154,8 +151,11 @@ To skip the question, make a CD with the answer in its `plan9.ini`
 (`PLAN9INI` takes `name=value` lines that replace the CD's own):
 
 ```sh
-cd tree && PLAN9INI='monitor=vesa' objtype=amd64 scripts/guest/mkiso.sh    # or i915, amdgpu: the machine's graphics
+cd tree && PLAN9INI='monitor=vesa' objtype=amd64 scripts/guest/mkiso.sh    # or i915, amdgpu, virtiogpu
 ```
+
+The guest that makes the CD holds the whole image in memory: `mkiso.sh` gives
+it 6 GB (`MEM=` to change).
 
 ## 5. Tests
 
