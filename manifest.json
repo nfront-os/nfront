@@ -1,0 +1,75 @@
+{
+	"name": "nfront",
+	"parts": {
+		"gcc": {
+			"branch": "gpu",
+			"commit": "2917ca807303db95430d9d7fea76c86269c77d83",
+			"path": "GCC_DIR"
+		},
+		"go": {
+			"branch": "main",
+			"commit": "380fa1f91f61b2d70543ccf7f602efe7760da747",
+			"path": "GO_DIR"
+		},
+		"go/go": {
+			"branch": "plan9",
+			"commit": "76c65f277f7d74e54666f4ffaf1244f93e25693e",
+			"path": "GO_DIR/go"
+		},
+		"mcp": {
+			"branch": "main",
+			"commit": "269f70440fa1f3ef6a657f39c6df697334f1e58d",
+			"path": "MCP_DIR"
+		},
+		"rust": {
+			"branch": "main",
+			"commit": "b58f134f4c0420e8d4e4b190b27760f771fa53b0",
+			"path": "RUST_DIR"
+		},
+		"rust/libc": {
+			"branch": "plan9",
+			"commit": "4f913ba3048f9ba1ad09dfbe9a03913f4c792e6d",
+			"path": "RUST_DIR/libc"
+		},
+		"rust/llvm-project": {
+			"branch": "main",
+			"commit": "b5a20db623e74e7941ef76472b85847f6409ac77",
+			"path": "RUST_DIR/llvm-project"
+		},
+		"rust/rust": {
+			"branch": "plan9",
+			"commit": "45256c1a94bd78f90ab5f470f00727ed70a6be67",
+			"path": "RUST_DIR/rust"
+		},
+		"tree": {
+			"branch": "ui",
+			"commit": "cb87e7b1197ce8a737cb49b0f13a2d86f88bfe8d",
+			"path": "TREE"
+		},
+		"tree-gcc": {
+			"branch": "gcc",
+			"commit": "b7f15db6a829b5144cc0c7281d97e483178f0e4d",
+			"path": "TREE_GCC"
+		},
+		"tree-nix": {
+			"branch": "nix",
+			"commit": "80de19da42ac944a7f03ee9ae8b7a3a85f0b591f",
+			"path": "TREE_NIX"
+		},
+		"tree-riscv": {
+			"branch": "riscv",
+			"commit": "4f296917c7c1b3142c8790360090cb1baf9955ee",
+			"path": "TREE_RISCV"
+		},
+		"tree-upstream": {
+			"branch": "upstream",
+			"commit": "edaf0ee0e9bb6508e029306acaa776587258cc71",
+			"path": "TREE_UPSTREAM"
+		},
+		"zig/zig": {
+			"branch": "master",
+			"commit": "1439392a884d7817481ed54d310285fd09506ce7",
+			"path": "ZIG_DIR/zig"
+		}
+	}
+}

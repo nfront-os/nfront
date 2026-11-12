@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+"""pin [-f]: manifest.json from the parts' heads (their branch and commit).
+Refuses while a part has changed tracked files, unless -f (then it says
+which: their changes are not in the pinned commit)."""
+import json, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import parts
+
+force = '-f' in sys.argv[1:]
+vals = parts.env()
+man = parts.load()
+out, dirty = {}, []
+for name, spec in parts.PARTS:
+	if name == 'dist':
+		continue	# the manifest's own repository
+	s = parts.state(parts.where(spec, vals))
+	if s is None:
+		continue
+	if s['dirty']:
+		dirty.append('%s (%d)' % (name, s['dirty']))
+	out[name] = {'path': spec, 'branch': s['branch'], 'commit': s['commit']}
+if dirty and not force:
+	sys.exit('pin: changed files in ' + ', '.join(dirty) + ': commit them, or pin -f')
+if dirty:
+	print('pin: not pinned, changed: ' + ', '.join(dirty), file=sys.stderr)
+man['parts'] = out
+with open(parts.MANIFEST, 'w') as f:
+	json.dump(man, f, indent='\t', sort_keys=True)
+	f.write('\n')
+print('pin: %d parts' % len(out))
