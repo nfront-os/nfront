@@ -65,11 +65,6 @@
 			"branch": "upstream",
 			"commit": "edaf0ee0e9bb6508e029306acaa776587258cc71",
 			"path": "TREE_UPSTREAM"
-		},
-		"zig/zig": {
-			"branch": "master",
-			"commit": "1439392a884d7817481ed54d310285fd09506ce7",
-			"path": "ZIG_DIR/zig"
 		}
 	}
 }

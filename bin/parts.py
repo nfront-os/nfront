@@ -18,7 +18,6 @@ PARTS = [
 	('rust', 'RUST_DIR'), ('rust/rust', 'RUST_DIR/rust'), ('rust/libc', 'RUST_DIR/libc'),
 	('rust/llvm-project', 'RUST_DIR/llvm-project'),
 	('go', 'GO_DIR'), ('go/go', 'GO_DIR/go'),
-	('zig/zig', 'ZIG_DIR/zig'),
 	('mcp', 'MCP_DIR'),
 	('dist', 'DIST'),
 ]
