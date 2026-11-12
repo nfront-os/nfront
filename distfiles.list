@@ -1,0 +1,22 @@
+# the releases' archives in DISTFILES (paths.env): name, sha256, where from ("-": unknown);
+# bin/fetch checks them and fetches the missing ones
+Inter-4.1.zip	9883fdd4a49d4fb66bd8177ba6625ef9a64aa45899767dde3d36aa425756b11e	-
+SDL3-3.4.20.tar.gz	f3bb06f55bed9557227a700af2ea62e49497ebdf58037732a731a5fb3ef8581f	https://github.com/libsdl-org/SDL/releases/download/release-3.4.20/SDL3-3.4.20.tar.gz
+expat-2.10.0.tar.gz	5466a341f9c692ef7a958a6881311be597f8e1ce345984cf78414f54793dea4c	https://github.com/libexpat/libexpat/releases/download/R_2_10_0/expat-2.10.0.tar.gz
+expat-2.10.0.tar.gz.asc	2941bd050fa96fdf6deaac7e724f0755f2a65babc85a68d375087a2581c5ccd7	https://github.com/libexpat/libexpat/releases/download/R_2_10_0/expat-2.10.0.tar.gz.asc
+fcft-3.3.3.tar.gz	b0c0f4a599f43723736c8565b8b84337c4195077f07f1bb8bb3252bb13a2306a	https://codeberg.org/dnkl/fcft/archive/3.3.3.tar.gz
+fontconfig-2.18.3.tar.xz	4f7b554a38cdf78c033f666c8871f3749e14a094f65a07f630c91ed0b43d35e3	https://gitlab.freedesktop.org/api/v4/projects/890/packages/generic/fontconfig/2.18.3/fontconfig-2.18.3.tar.xz
+fontconfig-2.18.3.tar.xz.sha256sum	3948d53e3d052dfa9a36a8a0a4691085d2c97347fa42a9bcdc2b8061150ba165	https://gitlab.freedesktop.org/api/v4/projects/890/packages/generic/fontconfig/2.18.3/fontconfig-2.18.3.tar.xz.sha256sum
+foot-1.28.0.tar.gz	4296be402b5684d049534598e69db92b918f92beac9dab76b585207045f0b037	https://codeberg.org/dnkl/foot/archive/1.28.0.tar.gz
+freetype-2.15.0.tar.xz	93cd47eb719c325107f2d3cf087d06299e944c3b48a40b55537302304dea1dd5	https://download.savannah.gnu.org/releases/freetype/freetype-2.15.0.tar.xz
+freetype-2.15.0.tar.xz.sig	6664ef375e30abffaf16d124d878ae2d4903d7af260692da7e975442eeca3462	https://download.savannah.gnu.org/releases/freetype/freetype-2.15.0.tar.xz.sig
+glfw-3.5.1.zip	ea79bc5feffc254c87291980c2d0bce9acebb68c4983b79f961dcd2cb8a611a0	https://github.com/glfw/glfw/releases/download/3.5.1/glfw-3.5.1.zip
+image-v0.48.0.tar.gz	23d30f8c929ad063d897273b4094418a3d6a059f15192ea06ccd8b860b01dedc	-
+libffi-3.5.2.tar.gz	f3a3082a23b37c293a4fcd1053147b371f2ff91fa7ea1b2a52e335676bac82dc	https://github.com/libffi/libffi/releases/download/v3.5.2/libffi-3.5.2.tar.gz
+libxkbcommon-1.13.2.tar.gz	acc4d5f7c3cbba5f9f8d08d8bdbeede84ecede46792f47929aa9321873385528	https://github.com/xkbcommon/libxkbcommon/archive/refs/tags/xkbcommon-1.13.2.tar.gz
+pixman-0.46.4.tar.xz	a098c33924754ad43f981b740f6d576c70f9ed1006e12221b1845431ebce1239	https://cairographics.org/releases/pixman-0.46.4.tar.xz
+pixman-0.46.4.tar.xz.sha512	d285f8030f2134749712a7bfbc68fa5cfd934d8dcc7bf63d63e0b24888f30328	https://cairographics.org/releases/pixman-0.46.4.tar.xz.sha512
+pixman-0.46.4.tar.xz.sha512.asc	407d2e373b23ab3e7835df1e2873908e74cc9ed3bb55bf316d4006729721e62a	https://cairographics.org/releases/pixman-0.46.4.tar.xz.sha512.asc
+tllist-1.1.0.tar.gz	0e7b7094a02550dd80b7243bcffc3671550b0f1d8ba625e4dff52517827d5d23	https://codeberg.org/dnkl/tllist/archive/1.1.0.tar.gz
+wayland-1.26.0.tar.xz	64176eaa46e4969903e286f8e5ef8331affc17fdf03ac9b58381d2b23162b7a3	https://gitlab.freedesktop.org/wayland/wayland/-/releases/1.26.0/downloads/wayland-1.26.0.tar.xz
+wayland-protocols-1.47.tar.xz	5fd4349bcbc9bab9a46f8cf77d1f434296a7a052c87440a094f63fcf62a58e20	https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/1.47/downloads/wayland-protocols-1.47.tar.xz

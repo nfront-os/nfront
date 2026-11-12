@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+"""fetch [-n]: the releases' archives of distfiles.list into DISTFILES
+(paths.env): each one there is checked against its sha256; a missing one
+is fetched from its URL (curl), checked, and only then kept.  -n: check
+only, fetch nothing.  Exit 1 if an archive is wrong, or missing without a
+URL or after the fetch."""
+import hashlib, os, subprocess, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import parts
+
+checkonly = '-n' in sys.argv[1:]
+d = parts.where('DISTFILES')
+os.makedirs(d, exist_ok=True)
+bad = 0
+for line in open(os.path.join(parts.HERE, 'distfiles.list')):
+	if not line.strip() or line.startswith('#'):
+		continue
+	name, sha, url = line.rstrip('\n').split('\t')
+	p = os.path.join(d, name)
+	if not os.path.exists(p):
+		if checkonly or url == '-':
+			print('missing  %s%s' % (name, '' if checkonly else ' (no URL known: put it there by hand)'))
+			bad += 1
+			continue
+		print('fetch    %s  %s' % (name, url))
+		part = p + '.part'
+		if subprocess.run(['curl', '-fsSL', '-o', part, url]).returncode != 0:
+			print('failed   %s' % name)
+			bad += 1
+			continue
+		if hashlib.sha256(open(part, 'rb').read()).hexdigest() != sha:
+			os.remove(part)
+			print('WRONG    %s: not the sha256 of distfiles.list (removed)' % name)
+			bad += 1
+			continue
+		os.rename(part, p)
+	elif hashlib.sha256(open(p, 'rb').read()).hexdigest() != sha:
+		print('WRONG    %s: not the sha256 of distfiles.list' % name)
+		bad += 1
+		continue
+	print('ok       %s' % name)
+sys.exit(1 if bad else 0)

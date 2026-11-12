@@ -10,7 +10,8 @@ Go for it.  This repository holds what ties the parts together:
 - `manifest.json`: the parts, their branches and the commits that belong
   together
 - `bin/`: `status` (each part against the manifest), `pin` (the
-  manifest from the parts' heads)
+  manifest from the parts' heads), `fetch` (the archives of
+  `distfiles.list` into DISTFILES, checked by sha256)
 - `docs/`: `roadmap.md`, `upstream.md` (bringing in 9front), `patches.md`, the plans (`plans/ui`, `plans/gpu`), `review/`
 
 The parts (in ~/Devel/nfront, beside this repository, `dist/`):
