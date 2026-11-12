@@ -16,9 +16,9 @@ PARTS = [
 	('tree-riscv', 'TREE_RISCV'), ('tree-upstream', 'TREE_UPSTREAM'),
 	('gcc', 'GCC_DIR'),
 	('rust', 'RUST_DIR'), ('rust/rust', 'RUST_DIR/rust'), ('rust/libc', 'RUST_DIR/libc'),
-	('rust/llvm-project', 'RUST_DIR/llvm-project'),
 	('go', 'GO_DIR'), ('go/go', 'GO_DIR/go'),
 	('mcp', 'MCP_DIR'),
+	('plan9port', 'PLAN9PORT'),
 	('dist', 'DIST'),
 ]
 
@@ -41,7 +41,14 @@ def where(spec, vals=None):
 	return os.path.join(vals[var], rest) if rest else vals[var]
 
 def git(d, *args):
-	r = subprocess.run(['git', '-C', d] + list(args), capture_output=True, text=True)
+	# a source archive made a repository keeps its git data beside it (toolchain/rust:
+	# rust.git for rust/, core.worktree=../rust): Rust's bootstrap wants no rust/.git
+	gd = d.rstrip('/') + '.git'
+	if not os.path.exists(os.path.join(d, '.git')) and os.path.isdir(gd):
+		cmd = ['git', '--git-dir=' + gd]
+	else:
+		cmd = ['git', '-C', d]
+	r = subprocess.run(cmd + list(args), capture_output=True, text=True, cwd=d if os.path.isdir(d) else None)
 	return r.stdout.strip() if r.returncode == 0 else None
 
 def state(d):

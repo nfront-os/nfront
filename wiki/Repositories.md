@@ -18,7 +18,7 @@ nfront/
 
 | Repository | Holds | Upstream it builds on |
 |---|---|---|
-| `dist` | `paths.env` (all paths), `manifest.json` (commits that belong together), `bin/` (`status`, `pin`, `fetch`, `build-all`), `docs/` (roadmap, upstream, patches), this wiki | — |
+| `dist` | `paths.env` (all paths), `manifest.json` (commits that belong together), `bin/` (`repos`, `status`, `pin`, `fetch`, `build-toolchains`, `build-all`), `docs/` (roadmap, upstream, patches), this wiki | — |
 | `tree` | 9front with the gcc port, the GPU stack, wsys, ui, tests, build tool (`sys/src/cmd/build`) | github.com/9front/9front |
 | `toolchain/gcc` | `build.sh`, `fetch.sh`, `patches/` (gcc.patch, binutils.patch), `plan9/` (gccmk) | gcc 16.2.0, binutils 2.47 |
 | `toolchain/rust` | `patches/` (rust, cargo, backtrace, llvm-project, libc, crates), `crates/`, `scripts/`, `tests/` | rust-lang/rust, rust-lang/libc |

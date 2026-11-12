@@ -42,6 +42,9 @@ the attic into git: a copy of nfront must carry no GPL material.
 - `status`: each part (branch, commit) against `manifest.json`, changed files.
 - `pin [-f]`: `manifest.json` from the parts' heads, after commits.
 - `fetch [-n]`: the archives of `distfiles.list` into `distfiles/`, checked by sha256.
+- `build-toolchains [-n] [-from STEP] [ARCH...]`: the whole chain from scratch
+  (tree, gcc, Rust, Go, tree again), one log per step in `dist/logs/`; the
+  build the wiki's Building page describes. Keep the two in step.
 - `build-all [-iso] [ARCH...]`: checks the toolchains, builds the tree
   (`build.exe -D` per arch), optionally the amd64 CD with Rust and Go.
 

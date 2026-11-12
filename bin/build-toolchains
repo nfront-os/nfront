@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+# build-toolchains [-n] [-from STEP] [ARCH...]: gcc, Rust and Go for 9front and the tree,
+# from scratch, in the one order that works (wiki: Building). ARCH: amd64 386 arm64
+# (default all three). Needs the sources: dist/bin/repos --sources.
+#
+#   tree-first     the tree without the toolchains (build-all): the libraries gcc's
+#                  cross compiler is built against
+#   gcc-A          toolchain/gcc: build.sh cross hostlibs native plan9 (objtype=A)
+#   rust-stage1    toolchain/rust: ./x build --stage 1 library (Linux + the ARCHes' targets)
+#   llvm-A         scripts/build-llvm.sh: LLVM for 9front
+#   rustc-A        ./x build --stage 2: rustc, rustdoc, rustfmt, clippy for 9front
+#   stage1-again-A ./x build --stage 1 library (stage 2 removed the other targets' std)
+#   cargo-A        scripts/build-cargo.sh: cargo for 9front
+#   install-A      scripts/install.sh: out/A (/A/rust on 9front)
+#   go-A           toolchain/go: scripts/build.sh, scripts/install.sh (the host Go once)
+#   tree           the tree again, now complete (build-all): APE parts, Rust programs
+#
+# Each step's output goes to dist/logs/<step>.log; the first failing step stops the run
+# and prints its log's end. -from STEP starts there (after a fix: the steps before it
+# are done). -n prints the steps only. One run at a time.
+set -e
+HERE=$(cd -P "$(dirname "$0")/.." && pwd -P)
+dry=0 from=
+while [ $# -gt 0 ]; do
+	case $1 in
+	-n)	dry=1; shift ;;
+	-from)	from=$2; shift 2 ;;
+	-*)	echo "usage: build-toolchains [-n] [-from STEP] [ARCH...]" >&2; exit 2 ;;
+	*)	break ;;
+	esac
+done
+arches=("$@")
+[ ${#arches[@]} -gt 0 ] || arches=(amd64 386 arm64)
+TREE=$(cd -P "$HERE/.." && pwd -P)/$(sed -n 's/^TREE=//p' "$HERE/paths.env")
+ROOT=$TREE
+. "$TREE/scripts/lib/paths.sh"	# GCC_DIR, RUST_DIR, GO_DIR
+LOGS=$HERE/logs
+mkdir -p "$LOGS"
+if [ $dry = 0 ]; then
+	exec 8>"$HERE/.build-toolchains.lock"
+	flock -n 8 || { echo "build-toolchains: another run is going on" >&2; exit 1; }
+fi
+
+rtarget(){ case $1 in amd64) echo x86_64-unknown-plan9;; 386) echo i686-unknown-plan9;; arm64) echo aarch64-unknown-plan9;;
+	*) echo "build-toolchains: no architecture $1 (amd64 386 arm64)" >&2; exit 2;; esac; }
+for a in "${arches[@]}"; do rtarget "$a" >/dev/null; done
+
+step(){
+	local name=$1 t; shift
+	if [ -n "$from" ]; then
+		[ "$name" = "$from" ] || { echo "skip  $name"; return 0; }
+		from=
+	fi
+	if [ $dry = 1 ]; then echo "step  $name: $*"; return 0; fi
+	t=$(date +%s)
+	echo "$(date +%H:%M) start $name"
+	if "$@" > "$LOGS/$name.log" 2>&1; then
+		echo "$(date +%H:%M) ok    $name ($(( ($(date +%s) - t) / 60 )) min)"
+	else
+		echo "$(date +%H:%M) FAIL  $name (log $LOGS/$name.log)"
+		tail -20 "$LOGS/$name.log"
+		echo "after a fix: $0 -from $name ${arches[*]}"
+		exit 1
+	fi
+}
+
+all=x86_64-unknown-linux-gnu
+for a in "${arches[@]}"; do all=$all,$(rtarget "$a"); done
+
+step tree-first "$HERE/bin/build-all" "${arches[@]}"
+for a in "${arches[@]}"; do
+	step gcc-$a env objtype=$a bash -c "cd '$GCC_DIR' && ./build.sh cross hostlibs native plan9"
+done
+step rust-stage1 bash -c "cd '$RUST_DIR/rust' && ./x build --stage 1 library --target $all"
+for a in "${arches[@]}"; do
+	t=$(rtarget "$a")
+	step llvm-$a env objtype=$a bash -c "cd '$RUST_DIR' && scripts/build-llvm.sh"
+	step rustc-$a bash -c "cd '$RUST_DIR/rust' && ./x build --stage 2 --host $t --target $t compiler/rustc src/tools/rustdoc src/tools/rustfmt src/tools/clippy"
+	step stage1-again-$a bash -c "cd '$RUST_DIR/rust' && ./x build --stage 1 library --target $all"
+	step cargo-$a env objtype=$a bash -c "cd '$RUST_DIR' && scripts/build-cargo.sh"
+	step install-$a env objtype=$a bash -c "cd '$RUST_DIR' && scripts/install.sh"
+done
+host=1
+for a in "${arches[@]}"; do
+	step go-$a env objtype=$a HOST=$host bash -c "cd '$GO_DIR' && scripts/build.sh && scripts/install.sh"
+	host=0
+done
+step tree "$HERE/bin/build-all" "${arches[@]}"
+[ $dry = 1 ] || echo "$(date +%H:%M) build-toolchains: done (${arches[*]})"

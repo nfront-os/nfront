@@ -1,106 +1,159 @@
 # Building
 
-Everything is cross-built on a Linux host (x86-64). gcc and Rust take hours; the tree takes minutes once they are there.
+Everything is built on a Linux host (x86-64) from the repositories of
+[nfront-os](https://github.com/nfront-os) and the release archives they name.
+The result is the 9front tree for amd64, 386 and arm64 with gcc, Rust and Go
+for 9front, and an install CD.
 
-## Prerequisites
+From scratch it is a handful of commands (sections 2–4) and about three hours,
+mostly gcc and Rust. Later builds are incremental and take minutes.
 
-See [[Host-requirements]]: what the host needs for the tree, each toolchain,
-the guest steps and the tests.
+| Part | Where | What it is |
+|---|---|---|
+| plan9port | `tools/plan9port` | rc, yacc and the generators the tree's build runs on Linux |
+| tree | `tree` | the 9front tree; `sys/src/cmd/build` (build.exe) builds it |
+| gcc | `toolchain/gcc` | gcc 16 and binutils for 9front: the cross compiler (Linux → 9front) and gcc on 9front |
+| Rust | `toolchain/rust` | rustc, cargo and std for 9front (from Rust's nightly source archive) |
+| Go | `toolchain/go` | Go for 9front (from Go's release archive) |
 
-## 0. Layout
+All paths come from `dist/paths.env`. Every command below starts in
+`~/Devel/nfront` unless it says otherwise.
 
-Get this repository, then the others where `dist/paths.env` puts them (see
-[[Repositories]]) and the release archives:
+## 1. Host
+
+Install what [[Host-requirements]] lists under "Always", "Per architecture"
+and "Toolchains"; for the CD and the tests also "Guests". Disk: about
+170 GB (gcc 70, Rust 50, tree 20, Go 6, guest images 20).
+
+## 2. The sources
 
 ```sh
-git clone https://github.com/nfront-os/nfront ~/Devel/nfront/dist
-cd ~/Devel/nfront
-dist/bin/repos --sources   # clones tree (+ worktrees), gcc, rust, go, mcp, plan9port;
-                           # then each toolchain's ./fetch.sh and dist/bin/fetch
+mkdir -p ~/Devel/nfront && cd ~/Devel/nfront
+git clone https://github.com/nfront-os/nfront dist
+dist/bin/repos --sources
 (cd tools/plan9port && ./INSTALL)
 ```
 
-`dist/bin/repos` again brings clean checkouts up to date (fast-forward only);
-`-n` shows what it would do. Private repositories: `NFRONT_GITHUB=git@github.com:nfront-os`.
+`dist/bin/repos` clones every part where `paths.env` puts it: the tree with its
+worktrees (`tree-gcc`, `tree-nix`, `tree-riscv`, `tree-upstream`), gcc, Rust,
+Go, mcp and plan9port. `--sources` then runs each toolchain's `./fetch.sh`
+and `dist/bin/fetch`:
 
-## 1. The tree, first pass (no APE, no Rust)
+- `toolchain/gcc/fetch.sh`: gcc, binutils, gmp, mpfr, mpc (GNU's signatures,
+  `sha256.txt`) into `src/`, our patches applied.
+- `toolchain/rust/fetch.sh`: Rust's nightly source archive and libc's crate
+  (signatures, `sha256.txt`) as the repositories `rust/` (its git data in
+  `rust.git`) and `libc/`, our patches on their branch `plan9`; then
+  `rust/bootstrap.toml`, `crates/` (the crates.io crates we change, fetched and
+  checked against crates.io's index) and `cargo-plan9.toml`.
+- `toolchain/go/fetch.sh`: Go's release archive as `go/`, our patches on its
+  branch `plan9`.
+- `dist/bin/fetch`: the archives of `distfiles.list` (Mesa, Wayland, SDL3, …)
+  into `distfiles/`, checked by sha256.
 
-```sh
-cd tree/sys/src/cmd/build && GO111MODULE=off go build -o build.exe . && cd -
-cd tree && CC=gcc ARCH=amd64 sys/src/cmd/build/build.exe
-```
+plan9port's `./INSTALL` builds it in place (a few minutes). It writes its own
+directory into about 75 of its files; that is expected, and `dist/bin/repos`
+knows it.
 
-Ends with `NNN files expected, ok`. Steps needing the cross compiler or Rust
-are skipped (`nocross`, `norust`). `ARCH=386` / `ARCH=arm64` for the others.
-
-## 2. gcc for 9front
-
-```sh
-cd toolchain/gcc
-./fetch.sh                                  # sources, GNU signatures, patches
-for s in cross hostlibs native plan9; do objtype=amd64 ./build.sh $s; done
-```
-
-`cross`: Linux → 9front compiler (used by the tree's APE parts and by Rust).
-`native`, `plan9`: gcc that runs on 9front (`out/amd64`, installed as `/amd64/gnu`).
-Repeat with `objtype=386`, `arm64`, `riscv64`.
-
-## 3. The tree, complete
+## 3. Toolchains and tree
 
 ```sh
-dist/bin/build-all amd64 386 arm64     # checks the toolchains, build.exe -D
+dist/bin/build-toolchains            # amd64 386 arm64; or name the architectures
 ```
 
-Now Mesa (`libvulkan.a`), libwayland, SDL3, GLFW and the APE programs are built.
+It runs these steps in order, each one's output in `dist/logs/<step>.log`,
+and stops at the first failure, showing the end of its log:
 
-## 4. Rust
+| Step | Runs | Time here |
+|---|---|---|
+| `tree-first` | `dist/bin/build-all`: the tree without the toolchains (gcc's cross compiler is built against its libraries) | 10 min |
+| `gcc-A` | `toolchain/gcc`: `objtype=A ./build.sh cross hostlibs native plan9` | 15 min per arch |
+| `rust-stage1` | `toolchain/rust/rust`: `./x build --stage 1 library --target <Linux and the arches>` (downloads Rust's stage-0 compiler and its LLVM) | 10 min |
+| `llvm-A` | `objtype=A scripts/build-llvm.sh`: LLVM for 9front | 15 min per arch |
+| `rustc-A` | `./x build --stage 2 --host T --target T compiler/rustc src/tools/rustdoc src/tools/rustfmt src/tools/clippy` | 10–25 min per arch |
+| `stage1-again-A` | `./x build --stage 1 library …` (stage 2 removed the other targets' std) | 1 min |
+| `cargo-A` | `objtype=A scripts/build-cargo.sh`: cargo for 9front | 5 min |
+| `install-A` | `objtype=A scripts/install.sh`: `out/A`, which is `/A/rust` on 9front | 1 min |
+| `go-A` | `toolchain/go`: `objtype=A scripts/build.sh && scripts/install.sh` (the host Go only for the first arch) | 5 min |
+| `tree` | `dist/bin/build-all` again, now with the APE parts (Mesa, Wayland, SDL3, …) and the Rust programs (wsys, term, ui) | 15 min |
+
+A is amd64, 386, arm64; T is the Rust target (`x86_64-unknown-plan9`,
+`i686-unknown-plan9`, `aarch64-unknown-plan9`). `dist/bin/build-toolchains -n`
+prints the steps with their full commands.
+
+When a step fails, read its log and fix the cause. Then continue from that
+step; the steps before it are done:
 
 ```sh
-cd toolchain/rust
-./fetch.sh                               # the nightly and libc's crate (signature, sha256), branches plan9 from patches/
-cp bootstrap.toml.example rust/bootstrap.toml   # set $GCC9, $RUST9 to the real paths
-cd rust && ./x build --stage 1 library --target x86_64-unknown-linux-gnu,x86_64-unknown-plan9,i686-unknown-plan9,aarch64-unknown-plan9
+dist/bin/build-toolchains -from rustc-386
 ```
 
-The stage-1 compiler is enough for the tree: `dist/bin/build-all` again
-builds wsys, term, wbar, ui. For a Rust that runs on 9front, per target
-(`amd64`/`x86_64-unknown-plan9`, `386`/`i686-…`, `arm64`/`aarch64-…`):
+The tree's build ends with `NNN files expected, ok` for each architecture
+(`dist/logs/tree.log`).
+
+## 4. Boot loaders and the CD
+
+9front's boot loaders are built with 9front's own compilers inside the built
+system, in a QEMU guest (needs "Guests" of [[Host-requirements]]):
 
 ```sh
-objtype=amd64 scripts/build-llvm.sh
-(cd rust && ./x build --stage 2 --host x86_64-unknown-plan9 --target x86_64-unknown-plan9 \
-    compiler/rustc src/tools/rustdoc src/tools/rustfmt src/tools/clippy)
-(cd rust && ./x build --stage 1 library --target ...all four...)   # stage 2 removes the others' sysroots
-objtype=amd64 scripts/build-cargo.sh
-objtype=amd64 scripts/install.sh       # out/amd64: /amd64/rust
+cd tree && scripts/guest/build-boot.sh && cd ..
+dist/bin/build-all -iso amd64         # ~/.cache/9front-cli/9front.amd64.iso, with Rust and Go
 ```
 
-## 5. Go
+The ISO is hybrid (BIOS, UEFI, CD or USB stick). Boot options for its
+`plan9.ini`:
 
 ```sh
-cd toolchain/go
-./fetch.sh                               # go1.27.3's release archive (signature, sha256), branch plan9 from patches/go
-objtype=amd64 scripts/build.sh && objtype=amd64 scripts/install.sh    # also 386, arm64
+cd tree && PLAN9INI='monitor=i915' objtype=amd64 scripts/guest/mkiso.sh
 ```
 
-## 6. Boot loaders and the CD
+## 5. Tests
 
 ```sh
 cd tree
-scripts/guest/build-boot.sh        # 9front's loaders, built with 8c/6c in a guest
-../dist/bin/build-all -iso amd64      # ~/.cache/9front-cli/9front.amd64.iso, with Rust and Go
+bash tests/static/run.sh       # seconds: manifests, licences, layouts (needs the Linux sources, see Host-requirements)
+bash tests/run.sh guest boot   # the system boots and works in QEMU
+bash tests/gpu/run.sh          # ~1 h: LinuxKPI selftests, virtio-gpu, Vulkan, GL, wsys (needs a host GPU)
 ```
 
-The ISO is hybrid (BIOS, UEFI, USB). Boot options go into `plan9.ini`:
+Only one guest at a time: they share `~/.cache/9front-cli`.
+
+## Later: updating
 
 ```sh
-PLAN9INI='monitor=i915' objtype=amd64 scripts/guest/mkiso.sh
+dist/bin/repos           # fast-forwards every part that is clean and on its branch
+dist/bin/status          # each part against manifest.json
 ```
 
-## 7. Tests
+Then rebuild what changed:
 
-```sh
-bash tests/static/run.sh       # seconds, no build: manifests, licences, layouts
-bash tests/gpu/run.sh          # ~1 h: LinuxKPI selftests, i915 mock, virtio-gpu, Vulkan, GL, wsys
-bash tests/run.sh guest boot   # more suites: tests/README.md
-```
+| What changed | Then |
+|---|---|
+| only the tree | `dist/bin/build-all amd64 386 arm64` (`build.exe -D`: only what is out of date; seconds when nothing is) |
+| gcc's patches or `sources.txt` | `cd toolchain/gcc && rm -rf src && ./fetch.sh && cd ../..`, then `dist/bin/build-toolchains -from gcc-amd64` (Rust and the tree depend on gcc) |
+| Rust's patches (`toolchain/rust/patches/*`, not `crates`) | `cd toolchain/rust && scripts/rust-patches.sh apply && cd ../..`, then `dist/bin/build-toolchains -from rust-stage1` |
+| a crate patch (`toolchain/rust/patches/crates`) | `cd toolchain/rust && scripts/crates-patch.sh apply && scripts/cargo-config.sh && cd ../..`, then `dist/bin/build-toolchains -from cargo-amd64` |
+| Rust's `sources.txt` (a new nightly) | `cd toolchain/rust && rm -rf rust rust.git libc && ./fetch.sh && cd ../..`, then `-from rust-stage1` |
+| Go's patches or `sources.txt` | `cd toolchain/go && rm -rf go && ./fetch.sh && cd ../..`, then `-from go-amd64` |
+| `distfiles.list` | `dist/bin/fetch`, then `dist/bin/build-all amd64 386 arm64` |
+| plan9port | `cd tools/plan9port && git checkout . && git pull && ./INSTALL` (`dist/bin/repos` says so too) |
+
+`rm -rf src`, `go` or `rust` throws away work in those directories; the
+patches are the record (each toolchain's README says how to write them back).
+`rust-patches.sh apply` stops by itself if `plan9` has commits of its own
+that the patches lack.
+
+## Not in `build-toolchains`
+
+- **riscv64** (the tree's branch `riscv`, worktree `tree-riscv`; needs
+  `riscv64-linux-gnu-gcc`, see [[Host-requirements]]):
+
+  ```sh
+  (cd tree-riscv/sys/src/cmd/build && GO111MODULE=off go build -o build.exe .)
+  (cd tree-riscv && CC=gcc ARCH=riscv64 sys/src/cmd/build/build.exe)
+  (cd toolchain/gcc && objtype=riscv64 ./build.sh cross hostlibs native plan9)   # ~30 min
+  ```
+- **Self-hosting**: the tree built inside 9front with 9front-gcc,
+  `tree/scripts/guest/build-self.sh`.
+- **Real hardware** (VFIO GPU tests): `tree/tests/README.md`.

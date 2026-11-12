@@ -12,7 +12,9 @@ Go for it.  This repository holds what ties the parts together:
 - `bin/`: `repos [-n] [--sources]` (clones the parts from GitHub or
   fast-forwards them), `status` (each part against the manifest), `pin` (the
   manifest from the parts' heads), `fetch` (the archives of
-  `distfiles.list` into DISTFILES, checked by sha256), `build-all [-iso] [ARCH...]`
+  `distfiles.list` into DISTFILES, checked by sha256), `build-toolchains [-n] [-from STEP] [ARCH...]`
+  (gcc, Rust, Go and the tree from scratch, step by step, logs in `logs/`),
+  `build-all [-iso] [ARCH...]`
   (checks the toolchains, builds the tree, optionally the amd64 CD)
 - `CLAUDE.nfront.md`: the guide for agents working in ~/Devel/nfront
   (its `CLAUDE.md` is a symlink to it)
