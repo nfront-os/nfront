@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# build-all [-iso] [ARCH...]: nfront from the parts paths.env names, with
+# what is there of the toolchains.
+#
+#   1. checks the toolchains: gcc's cross compiler and its install tree
+#      (GCC_DIR/build/<arch>/cross, out/<arch>), Rust's stage-1 rustc and
+#      out/<arch> (RUST_DIR), Go's out/<arch> (GO_DIR); a missing one is
+#      reported, not built (their builds take hours: build.sh, install.sh
+#      of each toolchain), and the tree's build skips what needs it
+#   2. the tree for each ARCH (default amd64): build.exe -D
+#   3. -iso: the install CD of amd64 with Rust and Go on it
+#      (scripts/guest/mkiso.sh; RUST_OUT, GO_OUT), into $CLI_DIR
+#
+# One run at a time (a lock in the distribution's directory): two builds in
+# the tree share its objects.
+set -e
+HERE=$(cd -P "$(dirname "$0")/.." && pwd -P)
+iso=0
+[ "$1" = -iso ] && { iso=1; shift; }
+arches=("$@")
+[ ${#arches[@]} -gt 0 ] || arches=(amd64)
+
+exec 9>"$HERE/.build-all.lock"
+flock -n 9 || { echo "build-all: another build-all runs" >&2; exit 1; }
+
+# the parts (scripts/lib/paths.sh of the tree reads paths.env)
+TREE=$(cd -P "$HERE/.." && pwd -P)/$(sed -n 's/^TREE=//p' "$HERE/paths.env")
+ROOT=$TREE
+. "$TREE/scripts/lib/paths.sh"
+
+triple(){ case $1 in amd64) echo x86_64-pc-plan9;; 386) echo i686-pc-plan9;; arm64) echo aarch64-pc-plan9;; esac; }
+for a in "${arches[@]}"; do
+	t=$(triple "$a")
+	[ -x "$GCC_DIR/build/$a/cross/bin/$t-gcc" ] || echo "build-all: no gcc cross compiler for $a ($GCC_DIR: objtype=$a ./build.sh cross): APE parts not built" >&2
+	[ -d "$GCC_DIR/out/$a" ] || echo "build-all: no native gcc for $a ($GCC_DIR/out/$a: build.sh native)" >&2
+	[ -d "$RUST_DIR/out/$a" ] || echo "build-all: no Rust for $a ($RUST_DIR/out/$a: scripts/install.sh)" >&2
+	[ -d "$GO_DIR/out/$a" ] || echo "build-all: no Go for $a ($GO_DIR/out/$a: scripts/install.sh)" >&2
+done
+[ -x "$RUST_DIR/rust/build/host/stage1/bin/rustc" ] || echo "build-all: no stage-1 rustc ($RUST_DIR): the Rust programs not built" >&2
+
+cd "$TREE"
+[ -x sys/src/cmd/build/build.exe ] || (cd sys/src/cmd/build && GO111MODULE=off go build -o build.exe .)
+for a in "${arches[@]}"; do
+	echo "build-all: the tree for $a"
+	CC=gcc ARCH=$a sys/src/cmd/build/build.exe -D
+done
+
+if [ $iso = 1 ]; then
+	echo "build-all: the amd64 CD"
+	RUST_OUT=$RUST_DIR/out/amd64 GO_OUT=$GO_DIR/out/amd64 objtype=amd64 scripts/guest/mkiso.sh
+fi
