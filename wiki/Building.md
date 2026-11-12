@@ -114,6 +114,42 @@ With `i915` or `amdgpu` the driver sets up the screen itself; if it has no
 picture after 60 seconds, the screen falls back to VESA. Its log goes to the
 boot stick's ESP as `i915boot.log` or `amdgpuboot.log`. Details: gpu(4).
 
+### In QEMU
+
+| QEMU display | Answer, driver |
+|---|---|
+| `-vga std` (QEMU's default) | `vesa` |
+| `-vga none -device virtio-vga` | `vesa` at boot; for virtio-gpu start `aux/virtiogpu` (below) |
+| `-vga none -device virtio-gpu-gl-pci,…` | 3D: Vulkan (venus) and GL (virgl) on the host's GPU, through `aux/virtiogpu` |
+
+`aux/virtiogpu` drives virtio-gpu (gpu(4)), but it isn't one of the boot
+question's answers yet. Start it in an rc before the graphics, as the tests
+do:
+
+```rc
+aux/virtiogpu
+bind -a '#i' /dev
+bind -a '#m' /dev
+aux/mouse ps2
+rio
+```
+
+Use `virtio-vga`, not `virtio-gpu-pci`: it also has a VGA screen, so the boot
+loader and the boot questions are visible. `aux/virtiogpu` finds both devices.
+
+3D needs a GPU on the host with Vulkan, KVM, and QEMU with virglrenderer.
+These are the options `tree/tests/gpu/run.sh` boots with:
+
+```sh
+-enable-kvm -cpu host -m 1024 -vga none \
+-device virtio-gpu-gl-pci,blob=true,venus=true,hostmem=256M \
+-object memory-backend-memfd,id=mem1,size=1024M,share=on -machine memory-backend=mem1 \
+-display egl-headless
+```
+
+`-m` must be the memory backend's size. For a window instead of
+`egl-headless`, QEMU's `-display gtk,gl=on` should work, but the tests don't use it.
+
 To skip the question, make a CD with the answer in its `plan9.ini`
 (`PLAN9INI` takes `name=value` lines that replace the CD's own):
 
