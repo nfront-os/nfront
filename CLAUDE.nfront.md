@@ -48,7 +48,7 @@ the attic into git: a copy of nfront must carry no GPL material.
 Docs: `dist/docs/roadmap.md` (phases, 1.0 criteria), `upstream.md` (bringing
 in 9front: front → gcc → main), `patches.md`; the plans (German) are kept
 outside git in `~/Devel/nfront-attic/dist-docs`.
-Logs of the work, in German: `tree/MEMORY.md`, `toolchain/*/NOTES.md`.
+Logs of the work: `tree/MEMORY.md` (German, stays so: every branch edits it, a translation would conflict in each rebase), `toolchain/*/NOTES.md` (English).
 
 ## Rules
 
@@ -72,5 +72,5 @@ Logs of the work, in German: `tree/MEMORY.md`, `toolchain/*/NOTES.md`.
   while a test suite boots guests. The RX 7600 by VFIO only when the user has
   bound it (`sudo tree/scripts/guest/vfio-gpu.sh bind <pid of the long-lived
   parent>`); no guest while binding or releasing.
-- Documentation only in English: `dist/docs`, the wiki, READMEs, comments.
+- Documentation only in English: `dist/docs`, the wiki, READMEs, NOTES.md, comments. Exception: the tree's `MEMORY.md` stays German.
 - Fix causes, not symptoms; close open ends (hangs, unrun tests) before new work.
