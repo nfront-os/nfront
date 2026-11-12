@@ -17,7 +17,7 @@ git clone https://github.com/nfront-os/nfront ~/Devel/nfront/dist
 cd ~/Devel/nfront
 dist/bin/repos --sources   # clones tree (+ worktrees), gcc, rust, go, mcp, plan9port;
                            # then each toolchain's ./fetch.sh and dist/bin/fetch
-(cd ../plan9port && ./INSTALL)
+(cd tools/plan9port && ./INSTALL)
 ```
 
 `dist/bin/repos` again brings clean checkouts up to date (fast-forward only);

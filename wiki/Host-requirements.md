@@ -15,13 +15,13 @@ scripts use the standard library only.
 | go | the build tool (`sys/src/cmd/build`) | go1.27 |
 | git | the repositories, the source archives made repositories | |
 | curl, gpg, gpgv, sha256sum | `fetch.sh` of each toolchain, `dist/bin/fetch` | |
-| [plan9port](https://github.com/9fans/plan9port) | rc, yacc and generators of the host build (`PLAN9PORT`, default `../plan9port`) | |
+| [plan9port](https://github.com/9fans/plan9port) | rc, yacc and generators of the host build (`PLAN9PORT`, `tools/plan9port`) | |
 
 Arch Linux:
 
 ```sh
 pacman -S --needed base-devel lib32-glibc lib32-gcc-libs go python git curl gnupg xz   # lib32-*: the multilib repository
-git clone https://github.com/9fans/plan9port ../plan9port && (cd ../plan9port && ./INSTALL)
+dist/bin/repos plan9port && (cd tools/plan9port && ./INSTALL)   # in ~/Devel/nfront
 ```
 
 ## Per architecture

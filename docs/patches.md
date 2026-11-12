@@ -1,18 +1,19 @@
-# Was nfront an fremden Quellen ändert (Stand 2026-11-12)
+# What nfront changes in other projects' sources (as of 2026-11-12)
 
-Jede Änderung an einer Vorlage steht als Patch-Reihe neben ihr, damit ein
-Update ein Rebase dieser Reihe ist.
+Every change to a template is kept as a patch series beside it, so that an
+update is a rebase of that series.
 
-| Teil | Vorlage | Patches | Wo |
+| Part | Template | Patches | Where |
 |---|---|---|---|
-| 9front | github.com/9front/9front `front` | 27 Korrekturen für 9front selbst | Tree `patch-upstream/` (README dort: Status je Patch) |
-| 9front, Port | `front` | Branch `gcc` (minimale Änderungen, je mit `/* GCC port */`), Branch `ui` | Tree |
-| Mesa | 26.2.4 | 42 | Tree `sys/src/mesa/patches`, `scripts/mesa/patches.sh` |
-| Linux DRM | 7.3.1 (nur MIT-Dateien, `vendor/`) | keine; eigene Fassungen in `replace/`, LinuxKPI in `kpi/` (Vorlagen OpenBSD a9becb03c, FreeBSD 584f44221f45, drm-kmod drm_v6.14) | Tree `sys/src/linux` (NOTICE, REJECTED, PROVENANCE) |
-| gcc, binutils | gcc 16.2.0, binutils 2.47 | `gcc.patch`, `binutils.patch` | `9front-gcc/patches` |
-| Rust | rust, libc, llvm-project (Branch `plan9`), Crates | rust 26, libc 7, llvm-project 1, cargo 3, backtrace 1, Crates 43 | `9front-rust/patches` |
-| Go | go1.27.3 (Branch `plan9`) | 6 | `9front-go/patches` |
-| Bibliotheken für APE | expat, freetype, fontconfig, pixman, fcft, tllist, foot, xkbcommon, wayland, SDL3, GLFW, libffi | Overlays/`plan9/`-Dateien je Bibliothek | Tree `sys/src/<lib>` (VERSION bzw. VENDOR.json, Archive in DISTFILES) |
+| 9front | github.com/9front/9front `front` | 27 fixes for 9front itself | tree `patch-upstream/` (its README: the status of each patch) |
+| 9front, the port | `front` | branch `gcc` (minimal changes, each marked `/* GCC port */`), branch `main` | tree |
+| Mesa | 26.2.4 | 42 | tree `sys/src/mesa/patches`, `scripts/mesa/patches.sh` |
+| Linux DRM | 7.3.1 (MIT files only, `vendor/`) | none; own versions in `replace/`, the LinuxKPI in `kpi/` (templates OpenBSD a9becb03c, FreeBSD 584f44221f45, drm-kmod drm_v6.14) | tree `sys/src/linux` (NOTICE, REJECTED, PROVENANCE) |
+| gcc, binutils | gcc 16.2.0, binutils 2.47 | `gcc.patch`, `binutils.patch` | `toolchain/gcc/patches` |
+| Rust | the nightly source archive (rust with cargo, backtrace, llvm-project; branch `plan9`), libc's crate, crates | rust 25, libc 7, llvm-project 1, cargo 3, backtrace 1, crates 43 | `toolchain/rust/patches` |
+| Go | go1.27.3 (branch `plan9`) | 6 | `toolchain/go/patches` |
+| Libraries for APE | expat, freetype, fontconfig, pixman, fcft, tllist, foot, xkbcommon, wayland, SDL3, GLFW, libffi | overlays/`plan9/` files per library | tree `sys/src/<lib>` (VERSION or VENDOR.json, archives in DISTFILES) |
+| plan9port | 9fans/plan9port | none (used unchanged, `tools/plan9port`) | — |
 
-Offen: ein Rebase-Zyklus je Teil (Phase 2 der Roadmap), Upstream-Anträge
-wo möglich.
+Open: a rebase cycle per part (phase 2 of the roadmap), upstream
+submissions where possible.

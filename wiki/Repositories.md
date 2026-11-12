@@ -12,6 +12,7 @@ nfront/
 │   ├── rust/          Rust for 9front (+ rust/, libc/)
 │   └── go/            Go for 9front (+ go/)
 ├── tools/mcp/         MCP server for 9front
+├── tools/plan9port/   Plan 9 from User Space (9fans', unchanged)
 └── distfiles/         release archives (not git)
 ```
 
@@ -24,13 +25,13 @@ nfront/
 | `toolchain/rust/rust`, `libc` | the release archives (`fetch.sh`: nightly source, libc's crate) as repositories of their own; the port on branch `plan9` (from `patches/`) | rust-lang/rust, rust-lang/libc |
 | `toolchain/go` | `patches/go`, `scripts/build.sh`, `install.sh`, tests | go1.27.3 |
 | `toolchain/go/go` | Go's release archive (`fetch.sh`) as a repository; the port on branch `plan9` | go1.27.3 |
+| `tools/plan9port` | rc, yacc and the generators of the host build (`PLAN9PORT`); 9fans' repository, unchanged: its `INSTALL` writes the install path into ~75 files, `bin/repos` knows that | github.com/9fans/plan9port |
 | `tools/mcp` | `9front-mcp`: lets an agent on Linux work on a 9front system (read, write, edit, glob, grep, rc) | — |
 
 Outside nfront, referenced by `dist/paths.env`:
 
 | Name | Path | Needed for |
 |---|---|---|
-| `PLAN9PORT` | `../plan9port` | rc, yacc and generators of the host build (9fans/plan9port, unchanged; its `INSTALL` writes the install path into ~75 files, `bin/repos` knows that) |
 | `LINUX`, `LINUX_OLD` | `../linux-7.3.1`, `../linux-6.6` | the LinuxKPI's tools and its GPL check |
 | `OPENBSD_SRC`, `FREEBSD_SRC`, `DRMKMOD_SRC` | `../openbsd`, `../freebsd-src`, `../drm-kmod` | importing the LinuxKPI's BSD templates |
 

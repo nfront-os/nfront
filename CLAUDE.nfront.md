@@ -16,6 +16,7 @@ it is not a git repository itself, each part is one.
 | `toolchain/rust/` | Rust for 9front; `rust/`, `libc/`, `llvm-project/` are repositories of their own | yes |
 | `toolchain/go/` | Go for 9front; `go/` is a repository of its own | yes |
 | `tools/mcp/` | MCP server: an agent on Linux works on a 9front guest | yes |
+| `tools/plan9port/` | Plan 9 from User Space (`PLAN9PORT`: rc, yacc, the host build's generators); 9fans' repository, unchanged, built by its `./INSTALL` | yes (9fans') |
 | `distfiles/` | the releases' archives other projects' sources come from | no (data) |
 | `dist/` | the distribution: `paths.env`, `manifest.json`, `bin/`, `docs/` | yes |
 
@@ -26,7 +27,7 @@ the attic into git: a copy of nfront must carry no GPL material.
 ## Paths
 
 - `dist/paths.env` is the only place with paths (relative to this
-  directory; things outside it as `../plan9port`, `../linux-7.3.1`, ...).
+  directory; things outside it as `../linux-7.3.1`, ...).
   After moving anything, change only this file.
 - Scripts read it: in the tree `scripts/lib/paths.sh` (after `ROOT=`) and
   `scripts/lib/paths.py` (`paths.get('GCC_DIR')`, `paths.archive()` for
@@ -71,4 +72,5 @@ Logs of the work, in German: `tree/MEMORY.md`, `toolchain/*/NOTES.md`.
   while a test suite boots guests. The RX 7600 by VFIO only when the user has
   bound it (`sudo tree/scripts/guest/vfio-gpu.sh bind <pid of the long-lived
   parent>`); no guest while binding or releasing.
+- Documentation only in English: `dist/docs`, the wiki, READMEs, comments.
 - Fix causes, not symptoms; close open ends (hangs, unrun tests) before new work.
