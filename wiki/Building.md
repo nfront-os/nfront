@@ -101,11 +101,24 @@ cd tree && scripts/guest/build-boot.sh && cd ..
 dist/bin/build-all -iso amd64         # ~/.cache/9front-cli/9front.amd64.iso, with Rust and Go
 ```
 
-The ISO is hybrid (BIOS, UEFI, CD or USB stick). Boot options for its
-`plan9.ini`:
+The ISO is hybrid (BIOS, UEFI, CD or USB stick). At boot it asks for the
+screen (`monitor`, default `vesa`):
+
+| Answer | Screen |
+|---|---|
+| `vesa` | the firmware's VESA modes; works on every PC, no acceleration |
+| `i915` | Intel graphics through the GPU stack (`aux/i915`, gpu(4)) |
+| `amdgpu` | AMD graphics through the GPU stack (`aux/amdgpu`, gpu(4)) |
+
+With `i915` or `amdgpu` the driver sets up the screen itself; if it has no
+picture after 60 seconds, the screen falls back to VESA. Its log goes to the
+boot stick's ESP as `i915boot.log` or `amdgpuboot.log`. Details: gpu(4).
+
+To skip the question, make a CD with the answer in its `plan9.ini`
+(`PLAN9INI` takes `name=value` lines that replace the CD's own):
 
 ```sh
-cd tree && PLAN9INI='monitor=i915' objtype=amd64 scripts/guest/mkiso.sh
+cd tree && PLAN9INI='monitor=vesa' objtype=amd64 scripts/guest/mkiso.sh    # or i915, amdgpu: the machine's graphics
 ```
 
 ## 5. Tests
