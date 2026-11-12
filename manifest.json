@@ -3,12 +3,12 @@
 	"parts": {
 		"gcc": {
 			"branch": "gpu",
-			"commit": "2917ca807303db95430d9d7fea76c86269c77d83",
+			"commit": "83a2ebbd7c6d27738c95dd6c0618da55b7517a7d",
 			"path": "GCC_DIR"
 		},
 		"go": {
 			"branch": "main",
-			"commit": "380fa1f91f61b2d70543ccf7f602efe7760da747",
+			"commit": "0445c180ac6cd51b88ed03831dceb7d239843b18",
 			"path": "GO_DIR"
 		},
 		"go/go": {
@@ -18,12 +18,12 @@
 		},
 		"mcp": {
 			"branch": "main",
-			"commit": "269f70440fa1f3ef6a657f39c6df697334f1e58d",
+			"commit": "dfb76b92260b49fc52382635bbcfbc6573353495",
 			"path": "MCP_DIR"
 		},
 		"rust": {
 			"branch": "main",
-			"commit": "b58f134f4c0420e8d4e4b190b27760f771fa53b0",
+			"commit": "3e534275dfc1028ca7cc3f4754fc349f3739d1be",
 			"path": "RUST_DIR"
 		},
 		"rust/libc": {
@@ -43,7 +43,7 @@
 		},
 		"tree": {
 			"branch": "ui",
-			"commit": "cb87e7b1197ce8a737cb49b0f13a2d86f88bfe8d",
+			"commit": "62143780cfd4747de72e90077c8aa479a150797f",
 			"path": "TREE"
 		},
 		"tree-gcc": {
