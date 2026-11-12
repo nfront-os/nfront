@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+"""repos [-n] [--sources] [part...]: get nfront's git repositories from GitHub, or
+bring them up to date, where dist/paths.env puts them.
+
+  a part that is missing      is cloned (the tree with its worktrees: main, gcc,
+                              nix, riscv, upstream; remote nfront = nfront-os/9front,
+                              origin = 9front's own)
+  a part that is there        is fetched and fast-forwarded, only if clean and on
+                              its branch; else it says so and leaves it alone
+  --sources                   then each toolchain's ./fetch.sh (the release archives
+                              and the patches) and bin/fetch (distfiles/)
+  -n                          only say what it would do
+
+parts: tree gcc rust go mcp plan9port (default: all).  GitHub: $NFRONT_GITHUB, default
+https://github.com/nfront-os (for private repositories: git@github.com:nfront-os).
+
+  git clone https://github.com/nfront-os/nfront ~/Devel/nfront/dist
+  ~/Devel/nfront/dist/bin/repos --sources"""
+import os, subprocess, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import parts
+
+GITHUB = os.environ.get('NFRONT_GITHUB', 'https://github.com/nfront-os').rstrip('/')
+NINEFRONT = 'https://github.com/9front/9front.git'
+# part: paths.env variable, repository, branch
+REPOS = {
+	'gcc': ('GCC_DIR', GITHUB + '/gcc.git', 'main'),
+	'rust': ('RUST_DIR', GITHUB + '/rust.git', 'main'),
+	'go': ('GO_DIR', GITHUB + '/go.git', 'main'),
+	'mcp': ('MCP_DIR', GITHUB + '/mcp.git', 'main'),
+	'plan9port': ('PLAN9PORT', 'https://github.com/9fans/plan9port.git', 'master'),
+}
+# the tree's worktrees: paths.env variable, branch
+WORKTREES = [('TREE', 'main'), ('TREE_GCC', 'gcc'), ('TREE_NIX', 'nix'),
+	('TREE_RISCV', 'riscv'), ('TREE_UPSTREAM', 'upstream')]
+
+args = sys.argv[1:]
+dry = '-n' in args
+sources = '--sources' in args
+want = [a for a in args if not a.startswith('-')] or ['tree'] + list(REPOS)
+vals = parts.env()
+bad = 0
+
+def run(cmd, cwd=None):
+	print('  ' + ' '.join(cmd) + (' (in %s)' % cwd if cwd else ''))
+	if not dry:
+		subprocess.run(cmd, cwd=cwd, check=True)
+
+def git(d, *a):
+	return parts.git(d, *a)
+
+def note(msg):
+	global bad
+	print('  ! ' + msg)
+	bad += 1
+
+def installed_only(d):
+	"""plan9port's INSTALL writes its directory over /usr/local/plan9 in ~75 files:
+	true if that is all that changed"""
+	diff = subprocess.run(['git', '-C', d, 'diff', '-U0'], capture_output=True, text=True).stdout
+	for l in diff.splitlines():
+		if l[:1] in '+-' and l[:3] not in ('+++', '---'):
+			if '/usr/local/plan9' not in l and os.path.realpath(d) not in l:
+				return False
+	return True
+
+def update(d, remote, branch):
+	"""fast-forward the checkout d (on branch) to remote/branch, if clean"""
+	cur = git(d, 'rev-parse', '--abbrev-ref', 'HEAD')
+	if cur != branch:
+		return note('%s is on %s, not %s: left alone' % (d, cur, branch))
+	if git(d, 'status', '--porcelain', '--untracked-files=no'):
+		if d == vals['PLAN9PORT'] and installed_only(d):
+			print('  %s: changed only by its INSTALL (the install path); to update: '
+				'git checkout . && git pull && ./INSTALL' % d)
+			return
+		return note('%s has changed files: left alone' % d)
+	if git(d, 'rev-parse', '-q', '--verify', '%s/%s' % (remote, branch)) is None:
+		return note('%s: no %s/%s' % (d, remote, branch))
+	if git(d, 'merge-base', '--is-ancestor', '%s/%s' % (remote, branch), 'HEAD') is not None:
+		ahead = int(git(d, 'rev-list', '--count', '%s/%s..HEAD' % (remote, branch)) or 0)
+		print('  %s: up to date%s' % (d, ', %d commits not pushed' % ahead if ahead else ''))
+		return
+	if git(d, 'merge-base', '--is-ancestor', 'HEAD', '%s/%s' % (remote, branch)) is None:
+		return note('%s: %s and %s/%s have gone apart: left alone' % (d, branch, remote, branch))
+	run(['git', '-C', d, 'merge', '-q', '--ff-only', '%s/%s' % (remote, branch)])
+
+def tree():
+	main = vals['TREE']
+	print('tree (%s)' % main)
+	if not os.path.isdir(main):
+		run(['git', 'clone', '-q', '-o', 'nfront', '-b', 'main', GITHUB + '/9front.git', main])
+		run(['git', '-C', main, 'remote', 'add', 'origin', NINEFRONT])
+		run(['git', '-C', main, 'branch', '-q', '--track', 'front', 'nfront/front'])
+	else:
+		run(['git', '-C', main, 'fetch', '-q', 'nfront'])
+	for var, branch in WORKTREES:
+		d = vals[var]
+		if var != 'TREE' and not os.path.isdir(d):
+			if dry or git(main, 'rev-parse', '-q', '--verify', 'refs/heads/' + branch) is None:
+				run(['git', '-C', main, 'branch', '-q', '--track', branch, 'nfront/' + branch])
+			run(['git', '-C', main, 'worktree', 'add', '-q', d, branch])
+		elif os.path.isdir(d):
+			update(d, 'nfront', branch)
+
+def repo(name):
+	var, url, branch = REPOS[name]
+	d = vals[var]
+	print('%s (%s)' % (name, d))
+	if not os.path.isdir(d):
+		run(['git', 'clone', '-q', '-b', branch, url, d])
+	else:
+		run(['git', '-C', d, 'fetch', '-q', 'origin'])
+		update(d, 'origin', branch)
+
+for w in want:
+	try:
+		tree() if w == 'tree' else repo(w)
+	except subprocess.CalledProcessError as e:
+		note('%s: %s failed' % (w, ' '.join(e.cmd)))
+	except KeyError:
+		note('%s: no such part (tree, %s)' % (w, ', '.join(REPOS)))
+
+if sources and not bad:
+	print('sources')
+	for name in ('gcc', 'rust', 'go'):
+		if name in want:
+			run(['./fetch.sh'], cwd=vals[REPOS[name][0]])
+	run([os.path.join(parts.HERE, 'bin', 'fetch')])
+	if 'plan9port' in want and not os.path.exists(os.path.join(vals['PLAN9PORT'], 'bin', 'rc')):
+		print('  plan9port is not built: cd %s && ./INSTALL' % vals['PLAN9PORT'])
+
+if bad:
+	print('repos: %d left alone or failed (see !)' % bad)
+sys.exit(1 if bad else 0)

@@ -9,7 +9,8 @@ Go for it.  This repository holds what ties the parts together:
   scripts of the tree and the toolchains read it)
 - `manifest.json`: the parts, their branches and the commits that belong
   together
-- `bin/`: `status` (each part against the manifest), `pin` (the
+- `bin/`: `repos [-n] [--sources]` (clones the parts from GitHub or
+  fast-forwards them), `status` (each part against the manifest), `pin` (the
   manifest from the parts' heads), `fetch` (the archives of
   `distfiles.list` into DISTFILES, checked by sha256), `build-all [-iso] [ARCH...]`
   (checks the toolchains, builds the tree, optionally the amd64 CD)

@@ -9,13 +9,19 @@ the guest steps and the tests.
 
 ## 0. Layout
 
-Put the repositories where `dist/paths.env` says (see [[Repositories]]),
-then fetch the release archives:
+Get this repository, then the others where `dist/paths.env` puts them (see
+[[Repositories]]) and the release archives:
 
 ```sh
+git clone https://github.com/nfront-os/nfront ~/Devel/nfront/dist
 cd ~/Devel/nfront
-dist/bin/fetch            # checks every archive by sha256, fetches missing ones
+dist/bin/repos --sources   # clones tree (+ worktrees), gcc, rust, go, mcp, plan9port;
+                           # then each toolchain's ./fetch.sh and dist/bin/fetch
+(cd ../plan9port && ./INSTALL)
 ```
+
+`dist/bin/repos` again brings clean checkouts up to date (fast-forward only);
+`-n` shows what it would do. Private repositories: `NFRONT_GITHUB=git@github.com:nfront-os`.
 
 ## 1. The tree, first pass (no APE, no Rust)
 
@@ -51,7 +57,7 @@ Now Mesa (`libvulkan.a`), libwayland, SDL3, GLFW and the APE programs are built.
 
 ```sh
 cd toolchain/rust
-scripts/rust-patches.sh apply            # branches plan9 from upstream clones
+./fetch.sh                               # the nightly and libc's crate (signature, sha256), branches plan9 from patches/
 cp bootstrap.toml.example rust/bootstrap.toml   # set $GCC9, $RUST9 to the real paths
 cd rust && ./x build --stage 1 library --target x86_64-unknown-linux-gnu,x86_64-unknown-plan9,i686-unknown-plan9,aarch64-unknown-plan9
 ```
@@ -73,8 +79,7 @@ objtype=amd64 scripts/install.sh       # out/amd64: /amd64/rust
 
 ```sh
 cd toolchain/go
-git clone --depth 1 --branch go1.27.3 https://go.googlesource.com/go go
-git -C go switch -c plan9 && git -C go am $PWD/patches/go/*.patch
+./fetch.sh                               # go1.27.3's release archive (signature, sha256), branch plan9 from patches/go
 objtype=amd64 scripts/build.sh && objtype=amd64 scripts/install.sh    # also 386, arm64
 ```
 
