@@ -98,8 +98,38 @@ system, in a QEMU guest (needs "Guests" of [[Host-requirements]]):
 
 ```sh
 cd tree && scripts/guest/build-boot.sh && cd ..
-dist/bin/build-all -iso amd64         # ~/.cache/9front-cli/9front.amd64.iso, with Rust and Go
+dist/bin/mkcd full                    # ~/.cache/9front-cli/nfront-full.amd64.iso
 ```
+
+### Installation profiles
+
+`dist/bin/mkcd PROFILE` makes the CD of one profile. Every profile comes from
+the same build of the branch `main`; a profile only decides which files go on
+the CD, and so onto the system installed from it.
+
+| Profile | On the CD | Size (amd64) |
+|---|---|---|
+| `minimal` | 9front built with gcc: rio, VESA | 330 MB |
+| `gpu` | + the GPU stack: gpu(4)'s drivers (i915, amdgpu, virtiogpu), Mesa's Vulkan, the Vulkan programs | 1.3 GB |
+| `ui` | + the desktop: wsys, the ui framework, term, foot, Wayland, the TrueType fonts and themes; wsys composes on the processor | 670 MB |
+| `full` | `gpu` and `ui`, with gcc, Rust and Go | past 2 GB |
+
+The languages are an option of every profile: `-dev` takes `gcc`, `rust`,
+`go` (comma-separated), `all` or `none`. The default is `all` for `full` and
+`none` for the others. Rust links with gcc, so `rust` brings gcc along.
+
+```sh
+dist/bin/mkcd minimal                         # nfront-minimal.amd64.iso
+dist/bin/mkcd -dev all minimal                # minimal with gcc, Rust and Go
+dist/bin/mkcd -dev rust gpu                   # nfront-gpu-dev-rust.amd64.iso
+dist/bin/mkcd -ini 'desktop=wsys' ui          # starts wsys instead of rio
+dist/bin/mkcd -o /tmp/x.iso full 386          # 386 (no GPU stack there)
+```
+
+The CDs go to `~/.cache/9front-cli` (`-o` for another place). `-ini` takes
+lines `name=value` for the CD's `plan9.ini`. The groups and their files are
+listed in `tree/scripts/guest/profiles`. `mkcd` needs the tree's build and
+takes a QEMU guest (one at a time); it does not start while `build-all` runs.
 
 The ISO is hybrid (BIOS, UEFI, CD or USB stick). At boot it asks for the
 screen (`monitor`, default `vesa`):
@@ -147,12 +177,14 @@ These are the options `tree/tests/gpu/run.sh` boots with:
 `-m` must be the memory backend's size. For a window instead of
 `egl-headless`, QEMU's `-display gtk,gl=on` should work, but the tests don't use it.
 
-To skip the question, make a CD with the answer in its `plan9.ini`
-(`PLAN9INI` takes `name=value` lines that replace the CD's own):
+To skip the question, make a CD with the answer in its `plan9.ini`:
 
 ```sh
-cd tree && PLAN9INI='monitor=vesa' objtype=amd64 scripts/guest/mkiso.sh    # or i915, amdgpu, virtiogpu
+dist/bin/mkcd -ini 'monitor=virtiogpu' full    # or vesa, i915, amdgpu
 ```
+
+A CD without the GPU stack (`minimal`, `ui`) asks only for VESA's kinds of
+screen. If `monitor` names a GPU driver anyway, it says so and takes VESA.
 
 The guest that makes the CD holds the whole image in memory: `mkiso.sh` gives
 it 6 GB (`MEM=` to change).

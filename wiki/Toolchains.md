@@ -6,7 +6,7 @@ page shows how to use them and how to rebuild the system with gcc.
 
 ## Getting them onto 9front
 
-The CD that `dist/bin/build-all -iso amd64` makes carries all three:
+The CD of the profile `full` (`dist/bin/mkcd full`, see [[Building]]) carries all three, as does any profile with `-dev all`:
 
 | Toolchain | On 9front | Built in |
 |---|---|---|

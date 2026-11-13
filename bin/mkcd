@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# mkcd [-dev LIST] [-ini 'name=value...'] [-o ISO] PROFILE [ARCH]: the install CD of
+# one installation profile, from the main branch's build (dist/bin/build-all, or
+# build-toolchains); the system installed from the CD has what the CD has.
+#
+#   PROFILE  (tree/scripts/guest/profiles)
+#     minimal  9front built with gcc: rio, VESA
+#     gpu      + the GPU stack: gpu(4)'s drivers (i915, amdgpu, virtiogpu), Mesa's Vulkan
+#     ui       + the desktop: wsys, the ui framework, term, foot, Wayland, the fonts
+#              (wsys composes on the processor)
+#     full     gpu and ui
+#   -dev LIST  the languages on the CD, any profile: gcc, rust, go, comma-separated,
+#              or all, or none. Default: all for full, none for the others.
+#              Rust links with gcc: rust takes gcc along
+#   -ini       lines name=value for the CD's plan9.ini (mkiso.sh's PLAN9INI),
+#              e.g. -ini 'monitor=virtiogpu'
+#   -o ISO     default $CLI_DIR/nfront-PROFILE[-dev-LIST].ARCH.iso
+#   ARCH       amd64 (default) or 386
+#
+# Takes a QEMU guest (one at a time: it shares ~/.cache/9front-cli with the others).
+set -e
+HERE=$(cd -P "$(dirname "$0")/.." && pwd -P)
+usage(){ echo "usage: mkcd [-dev gcc,rust,go|all|none] [-ini 'name=value'] [-o iso] minimal|gpu|ui|full [amd64|386]" >&2; exit 2; }
+dev=- ini= out=
+while [ $# -gt 0 ]; do
+	case $1 in
+	-dev)	[ $# -ge 2 ] || usage; dev=$2; shift 2 ;;
+	-ini)	[ $# -ge 2 ] || usage; ini=$2; shift 2 ;;
+	-o)	[ $# -ge 2 ] || usage; out=$2; shift 2 ;;
+	-*)	usage ;;
+	*)	break ;;
+	esac
+done
+[ $# -ge 1 ] && [ $# -le 2 ] || usage
+profile=$1 arch=${2:-amd64}
+case $profile in minimal|gpu|ui|full) ;; *) usage ;; esac
+case $arch in amd64|386) ;; *) echo "mkcd: the CD is for amd64 or 386, not $arch" >&2; exit 2 ;; esac
+if [ "$dev" = - ]; then
+	[ $profile = full ] && dev=all || dev=none
+fi
+[ "$dev" = none ] && dev=
+[ "$dev" = all ] && dev=gcc,rust,go
+for l in ${dev//,/ }; do
+	case $l in gcc|rust|go) ;; *) echo "mkcd: -dev: no language $l (gcc, rust, go)" >&2; exit 2 ;; esac
+done
+
+TREE=$(cd -P "$HERE/.." && pwd -P)/$(sed -n 's/^TREE=//p' "$HERE/paths.env")
+CLI_DIR=${CLI_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/9front-cli}
+name=nfront-$profile
+[ -n "$dev" ] && [ $profile != full -o "$dev" != gcc,rust,go ] && name=$name-dev-${dev//,/-}
+out=${out:-$CLI_DIR/$name.$arch.iso}
+
+# with build-all's lock: the CD is made from the tree's build
+exec 9>"$HERE/.build-all.lock"
+flock -n 9 || { echo "mkcd: build-all runs" >&2; exit 1; }
+
+echo "mkcd: $profile, languages: ${dev:-none}, $arch -> $out"
+cd "$TREE"
+PROFILE=$profile DEV=$dev PLAN9INI=$ini objtype=$arch scripts/guest/mkiso.sh "$out"
+ls -l "$out"

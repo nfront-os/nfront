@@ -9,7 +9,8 @@
 #      of each toolchain), and the tree's build skips what needs it
 #   2. the tree for each ARCH (default amd64): build.exe -D
 #   3. -iso: the install CD of amd64 with Rust and Go on it
-#      (scripts/guest/mkiso.sh; RUST_OUT, GO_OUT), into $CLI_DIR
+#      (scripts/guest/mkiso.sh; RUST_OUT, GO_OUT), into $CLI_DIR; the CDs of the
+#      installation profiles (minimal, gpu, ui, full; -dev): dist/bin/mkcd
 #
 # One run at a time (a lock in the distribution's directory): two builds in
 # the tree share its objects.
