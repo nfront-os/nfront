@@ -13,7 +13,9 @@ nfront/
 │   └── go/            Go for 9front (+ go/)
 ├── tools/mcp/         MCP server for 9front
 ├── tools/plan9port/   Plan 9 from User Space (9fans', unchanged)
-└── distfiles/         release archives (not git)
+├── distfiles/         release archives (not git)
+└── cache/             what the build and the guests keep (not git): cli/ (CLI_DIR:
+                       guest images, CDs), the ports' work dirs, the provenance cache
 ```
 
 | Repository | Holds | Upstream it builds on |

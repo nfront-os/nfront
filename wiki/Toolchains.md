@@ -137,7 +137,7 @@ The script:
    disk;
 3. runs the tree's own build tool there (`build.exe`, built for Plan 9) with
    gcc, exactly as `CC=gcc ARCH=$objtype build.exe` on Linux does;
-4. copies the result back to `~/.cache/9front-cli/self.$objtype` and compares
+4. copies the result back to `~/Devel/nfront/cache/cli/self.$objtype` and compares
    every object with the Linux build.
 
 It needs the tree built for that architecture and `toolchain/gcc/out/$objtype`

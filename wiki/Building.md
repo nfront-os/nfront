@@ -98,7 +98,7 @@ system, in a QEMU guest (needs "Guests" of [[Host-requirements]]):
 
 ```sh
 cd tree && scripts/guest/build-boot.sh && cd ..
-dist/bin/mkcd full                    # ~/.cache/9front-cli/nfront-full.amd64.iso
+dist/bin/mkcd full                    # ~/Devel/nfront/cache/cli/nfront-full.amd64.iso
 ```
 
 ### Installation profiles
@@ -128,7 +128,7 @@ dist/bin/mkcd -ini 'desktop=wsys' ui          # starts wsys instead of rio
 dist/bin/mkcd -o /tmp/x.iso full 386          # 386 (no GPU stack there)
 ```
 
-The CDs go to `~/.cache/9front-cli` (`-o` for another place). `-ini` takes
+The CDs go to `~/Devel/nfront/cache/cli` (`-o` for another place). `-ini` takes
 lines `name=value` for the CD's `plan9.ini`. The groups and their files are
 listed in `tree/scripts/guest/profiles`. `mkcd` needs the tree's build and
 takes a QEMU guest (one at a time); it does not start while `build-all` runs.
@@ -162,7 +162,7 @@ boot loader and the boot questions are visible. `aux/virtiogpu` drives both.
 For example, the CD with virtio-gpu:
 
 ```sh
-qemu-system-x86_64 -enable-kvm -m 4096 -cdrom ~/.cache/9front-cli/nfront-full.amd64.iso \
+qemu-system-x86_64 -enable-kvm -m 4096 -cdrom ~/Devel/nfront/cache/cli/nfront-full.amd64.iso \
 	-vga none -device virtio-vga
 ```
 
@@ -201,9 +201,9 @@ bash tests/gpu/run.sh          # ~1 h: LinuxKPI selftests, virtio-gpu, Vulkan, G
 ```
 
 The CD tests (`bash tests/run.sh iso`) make a CD of their own; to test a
-profile's CD instead: `ISO=~/.cache/9front-cli/nfront-ui.amd64.iso bash tests/run.sh iso`.
+profile's CD instead: `ISO=~/Devel/nfront/cache/cli/nfront-ui.amd64.iso bash tests/run.sh iso`.
 
-Only one guest at a time: they share `~/.cache/9front-cli`.
+Only one guest at a time: they share `~/Devel/nfront/cache/cli` (`CLI_DIR`).
 
 ## Later: updating
 

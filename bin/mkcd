@@ -17,7 +17,7 @@
 #   -o ISO     default $CLI_DIR/nfront-PROFILE[-dev-LIST].ARCH.iso
 #   ARCH       amd64 (default) or 386
 #
-# Takes a QEMU guest (one at a time: it shares ~/.cache/9front-cli with the others).
+# Takes a QEMU guest (one at a time: it shares CLI_DIR, nfront/cache/cli, with the others).
 set -e
 HERE=$(cd -P "$(dirname "$0")/.." && pwd -P)
 usage(){ echo "usage: mkcd [-dev gcc,rust,go|all|none] [-ini 'name=value'] [-o iso] minimal|gpu|ui|full [amd64|386]" >&2; exit 2; }
@@ -45,7 +45,8 @@ for l in ${dev//,/ }; do
 done
 
 TREE=$(cd -P "$HERE/.." && pwd -P)/$(sed -n 's/^TREE=//p' "$HERE/paths.env")
-CLI_DIR=${CLI_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/9front-cli}
+ROOT=$TREE
+. "$TREE/scripts/lib/paths.sh"	# CLI_DIR (paths.env)
 name=nfront-$profile
 [ -n "$dev" ] && [ $profile != full -o "$dev" != gcc,rust,go ] && name=$name-dev-${dev//,/-}
 out=${out:-$CLI_DIR/$name.$arch.iso}

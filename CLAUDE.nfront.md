@@ -71,7 +71,7 @@ Logs of the work: `tree/MEMORY.md` (German, stays so: every branch edits it, a t
 - Builds: never two builds in one tree at once (`build-all` locks). After
   changes: `tree/tests/static/run.sh`, the build, and for the GPU stack
   `tree/tests/gpu/run.sh` (QEMU, ~140 checks).
-- Guests: one at a time (they share `~/.cache/9front-cli`); no side load
+- Guests: one at a time (they share `cache/cli`, `CLI_DIR`); no side load
   while a test suite boots guests. The RX 7600 by VFIO only when the user has
   bound it (`sudo tree/scripts/guest/vfio-gpu.sh bind <pid of the long-lived
   parent>`); no guest while binding or releasing.
