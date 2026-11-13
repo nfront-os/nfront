@@ -15,7 +15,8 @@ replica and ISOs. 9front's `front` stays the source, brought in regularly
   LinuxKPI from OpenBSD/FreeBSD templates, `scripts/linux/provenance.py` in
   `tests/static`). Exceptions: Bison parsers (GPL with the Bison
   exception), dual-licensed files (a permissive choice), firmware separate
-  under `/lib/firmware`.
+  under `/lib/firmware`; the CA roots (Mozilla's, MPL-2.0) likewise a separate file,
+  from `distfiles.list` onto a CD with Rust or Go as `/sys/lib/tls/ca.pem`.
 - Tests: `tests/static`, `tests/gpu/run.sh` (QEMU, ~140 checks), the
   RX 7600 by VFIO (`amdall.rc`); the laptop (i915) untested since Linux 7.3.
 

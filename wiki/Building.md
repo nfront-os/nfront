@@ -116,7 +116,9 @@ the CD, and so onto the system installed from it.
 
 The languages are an option of every profile: `-dev` takes `gcc`, `rust`,
 `go` (comma-separated), `all` or `none`. The default is `all` for `full` and
-`none` for the others. Rust links with gcc, so `rust` brings gcc along.
+`none` for the others. Rust links with gcc, so `rust` brings gcc along. With Rust
+or Go the CD also gets the CA roots (`/sys/lib/tls/ca.pem`), so cargo and go
+can fetch crates and modules over https.
 
 ```sh
 dist/bin/mkcd minimal                         # nfront-minimal.amd64.iso

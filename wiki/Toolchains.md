@@ -79,7 +79,10 @@ rustc hello.rs && ./hello
 cargo new hello && cd hello && cargo run
 ```
 
-- cargo needs the CA roots in `/sys/lib/tls/ca.pem` for crates.io.
+- cargo and go reach crates.io and Go's module proxy over https with the CA roots in
+  `/sys/lib/tls/ca.pem`. A CD with Rust or Go has them: Mozilla's list as curl
+  extracts it (`cacert-DATE.pem` in `distfiles.list`; MPL-2.0, so kept out of the
+  tree like firmware). 9front itself ships none.
 - Crates with C code build through gcc (APE). Crates that 9front needs
   changes for come from nfront's patches (`toolchain/rust/crates`); in your own
   project, use them through `[patch.crates-io]` like `toolchain/rust/cargo-plan9.toml`.
