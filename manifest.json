@@ -18,7 +18,7 @@
 		},
 		"mcp": {
 			"branch": "main",
-			"commit": "e1052a280093c263efc74f6f8fbd8a0440bbb716",
+			"commit": "4db5df769726047cfdf82e6d78653aabab99469e",
 			"path": "MCP_DIR"
 		},
 		"plan9port": {
@@ -28,7 +28,7 @@
 		},
 		"rust": {
 			"branch": "main",
-			"commit": "6bbb32d3b7cf69a24d8d801d0bdc245cdba39487",
+			"commit": "82d15d97243aae8c00d515f1dfb8651ca352da90",
 			"path": "RUST_DIR"
 		},
 		"rust/libc": {
@@ -43,7 +43,7 @@
 		},
 		"tree": {
 			"branch": "main",
-			"commit": "b4f4ee1c0dd5c958e45bfb3bcf974cf3b9e6399b",
+			"commit": "003c0bf50fb8936ea9cab60cfffb25036936e9ed",
 			"path": "TREE"
 		},
 		"tree-gcc": {
