@@ -3,12 +3,12 @@
 	"parts": {
 		"gcc": {
 			"branch": "main",
-			"commit": "ba3d0204bc4994bd86971a68631c1ab748fd90ef",
+			"commit": "ae85fdbbe5ab66e01bc1efa49bd4f33540ca5a40",
 			"path": "GCC_DIR"
 		},
 		"go": {
 			"branch": "main",
-			"commit": "79609a89b6294667ad7bc0ef76a949a69ad9c492",
+			"commit": "b57fe833471fbeb2393740bbd31fbb396f9bf051",
 			"path": "GO_DIR"
 		},
 		"go/go": {
@@ -18,7 +18,7 @@
 		},
 		"mcp": {
 			"branch": "main",
-			"commit": "4db5df769726047cfdf82e6d78653aabab99469e",
+			"commit": "56f49153d101bd3545e5028d2c448ed385efd141",
 			"path": "MCP_DIR"
 		},
 		"plan9port": {
@@ -28,7 +28,7 @@
 		},
 		"rust": {
 			"branch": "main",
-			"commit": "82d15d97243aae8c00d515f1dfb8651ca352da90",
+			"commit": "69dd67cea6dbb1a23d91b28868da1d8d0bc7904a",
 			"path": "RUST_DIR"
 		},
 		"rust/libc": {
@@ -43,7 +43,7 @@
 		},
 		"tree": {
 			"branch": "main",
-			"commit": "003c0bf50fb8936ea9cab60cfffb25036936e9ed",
+			"commit": "7e228c56fed9ed06c26578856171795d7c768624",
 			"path": "TREE"
 		},
 		"tree-gcc": {
