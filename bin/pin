@@ -13,8 +13,12 @@ out, dirty = {}, []
 for name, spec in parts.PARTS:
 	if name == 'dist':
 		continue	# the manifest's own repository
-	s = parts.state(parts.where(spec, vals))
+	s = parts.state(parts.where(spec, vals), name, vals)
 	if s is None:
+		# not here (a worktree not made, a part not cloned): its pin stays as it was
+		if name in man.get('parts', {}):
+			out[name] = man['parts'][name]
+			print('pin: %s not here, its pin kept (%s)' % (name, man['parts'][name]['commit'][:10]), file=sys.stderr)
 		continue
 	if s['dirty']:
 		dirty.append('%s (%d)' % (name, s['dirty']))

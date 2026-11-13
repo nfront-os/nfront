@@ -35,7 +35,8 @@ dist/bin/repos --sources
 ```
 
 `dist/bin/repos` clones every part where `paths.env` puts it: the tree with its
-worktrees (`tree-gcc`, `tree-nix`, `tree-riscv`, `tree-upstream`), gcc, Rust,
+branches (`main` checked out; `gcc`, `nix`, `riscv`, `upstream` as refs: a worktree
+for one of them only with `--worktrees=riscv` etc.), gcc, Rust,
 Go, mcp and plan9port. `--sources` then runs each toolchain's `./fetch.sh`
 and `dist/bin/fetch`:
 
@@ -232,7 +233,8 @@ that the patches lack.
 
 ## Not in `build-toolchains`
 
-- **riscv64** (the tree's branch `riscv`, worktree `tree-riscv`; needs
+- **riscv64** (the tree's branch `riscv` in the worktree `tree-riscv`: first
+  `dist/bin/repos --worktrees=riscv tree`; needs
   `riscv64-linux-gnu-gcc`, see [[Host-requirements]]):
 
   ```sh

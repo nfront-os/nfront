@@ -51,14 +51,26 @@ def git(d, *args):
 	r = subprocess.run(cmd + list(args), capture_output=True, text=True, cwd=d if os.path.isdir(d) else None)
 	return r.stdout.strip() if r.returncode == 0 else None
 
-def state(d):
-	"""branch, commit, number of changed tracked files; None if no repository there"""
+# the tree's other branches: worktrees only when one works on them (dist/bin/repos
+# --worktrees); without its worktree a branch is the tree repository's ref
+BRANCHES = {'tree-gcc': 'gcc', 'tree-nix': 'nix', 'tree-riscv': 'riscv', 'tree-upstream': 'upstream'}
+
+def state(d, name=None, vals=None):
+	"""branch, commit, number of changed tracked files, the directory and revision to ask
+	git about (gitdir, head); None if no repository there. A branch of the tree without its
+	worktree (name in BRANCHES): its ref in the tree's repository, 'worktree': False"""
 	if not os.path.isdir(d) or git(d, 'rev-parse', '--git-dir') is None:
+		if name in BRANCHES:
+			tree = where('TREE', vals)
+			b = BRANCHES[name]
+			commit = git(tree, 'rev-parse', '--verify', '-q', 'refs/heads/' + b) if os.path.isdir(tree) else None
+			if commit:
+				return {'branch': b, 'commit': commit, 'dirty': 0, 'gitdir': tree, 'head': b, 'worktree': False}
 		return None
 	commit = git(d, 'rev-parse', 'HEAD')
 	branch = git(d, 'rev-parse', '--abbrev-ref', 'HEAD')
 	dirty = git(d, 'status', '--porcelain', '--untracked-files=no') or ''
-	return {'branch': branch, 'commit': commit, 'dirty': len(dirty.splitlines())}
+	return {'branch': branch, 'commit': commit, 'dirty': len(dirty.splitlines()), 'gitdir': d, 'head': 'HEAD', 'worktree': True}
 
 def load():
 	try:

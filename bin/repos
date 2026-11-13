@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
-"""repos [-n] [--sources] [part...]: get nfront's git repositories from GitHub, or
+"""repos [-n] [--sources] [--worktrees[=b,...]] [part...]: get nfront's git repositories from GitHub, or
 bring them up to date, where dist/paths.env puts them.
 
-  a part that is missing      is cloned (the tree with its worktrees: main, gcc,
-                              nix, riscv, upstream; remote nfront = nfront-os/9front,
-                              origin = 9front's own)
+  a part that is missing      is cloned (the tree: branch main checked out, the
+                              branches front, gcc, nix, riscv, upstream as refs;
+                              remote nfront = nfront-os/9front, origin = 9front's own)
   a part that is there        is fetched and fast-forwarded, only if clean and on
                               its branch; else it says so and leaves it alone
+  --worktrees[=gcc,nix,...]   also a worktree for those branches of the tree (default
+                              all: gcc nix riscv upstream), where paths.env puts them
+                              (TREE_GCC, ...): only to work on several branches at
+                              once; a branch without one is fast-forwarded as a ref
   --sources                   then each toolchain's ./fetch.sh (the release archives
                               and the patches) and bin/fetch (distfiles/)
   -n                          only say what it would do
@@ -37,6 +41,9 @@ WORKTREES = [('TREE', 'main'), ('TREE_GCC', 'gcc'), ('TREE_NIX', 'nix'),
 args = sys.argv[1:]
 dry = '-n' in args
 sources = '--sources' in args
+wt = [a for a in args if a == '--worktrees' or a.startswith('--worktrees=')]
+mkwt = set(b for _, b in WORKTREES[1:]) if wt == ['--worktrees'] else \
+	set(wt[0].split('=', 1)[1].split(',')) if wt else set()
 want = [a for a in args if not a.startswith('-')] or ['tree'] + list(REPOS)
 vals = parts.env()
 bad = 0
@@ -96,12 +103,18 @@ def tree():
 		run(['git', '-C', main, 'fetch', '-q', 'nfront'])
 	for var, branch in WORKTREES:
 		d = vals[var]
-		if var != 'TREE' and not os.path.isdir(d):
-			if dry or git(main, 'rev-parse', '-q', '--verify', 'refs/heads/' + branch) is None:
-				run(['git', '-C', main, 'branch', '-q', '--track', branch, 'nfront/' + branch])
-			run(['git', '-C', main, 'worktree', 'add', '-q', d, branch])
-		elif os.path.isdir(d):
+		if os.path.isdir(d):
 			update(d, 'nfront', branch)
+			continue
+		if dry or git(main, 'rev-parse', '-q', '--verify', 'refs/heads/' + branch) is None:
+			run(['git', '-C', main, 'branch', '-q', '--track', branch, 'nfront/' + branch])
+		elif git(main, 'merge-base', '--is-ancestor', branch, 'nfront/' + branch) is not None:
+			# no worktree: the ref, fast-forwarded (only that)
+			run(['git', '-C', main, 'update-ref', 'refs/heads/' + branch, 'refs/remotes/nfront/' + branch])
+		else:
+			note('tree: %s and nfront/%s have gone apart: left alone' % (branch, branch))
+		if branch in mkwt:
+			run(['git', '-C', main, 'worktree', 'add', '-q', d, branch])
 
 def repo(name):
 	var, url, branch = REPOS[name]

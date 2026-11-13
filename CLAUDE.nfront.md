@@ -11,7 +11,7 @@ it is not a git repository itself, each part is one.
 | Path | What | Git |
 |---|---|---|
 | `tree/` | the 9front tree, branch `main` (was `ui`); see `tree/CLAUDE.md` | yes; worktrees below |
-| `tree-gcc/`, `tree-nix/`, `tree-riscv/`, `tree-upstream/` | worktrees of `tree`: branches `gcc` (the gcc port), `nix`, `riscv`, `upstream` (fixes for 9front itself) | worktrees |
+| `tree-gcc/`, `tree-nix/`, `tree-riscv/`, `tree-upstream/` | worktrees of `tree`, only when needed (`dist/bin/repos --worktrees=...`): branches `gcc` (the gcc port), `nix`, `riscv`, `upstream` (fixes for 9front itself); without one the branch is a ref in `tree` (`bin/status` says so) | worktrees, optional |
 | `toolchain/gcc/` | gcc 16 and binutils for 9front, cross and native (branch `main`) | yes |
 | `toolchain/rust/` | Rust for 9front; `rust/`, `libc/`, `llvm-project/` are repositories of their own | yes |
 | `toolchain/go/` | Go for 9front; `go/` is a repository of its own | yes |

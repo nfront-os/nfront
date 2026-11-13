@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """status: each part of nfront against manifest.json: where it is, its
-branch and commit, whether that is the manifest's (=), changed files."""
+branch and commit, whether that is the manifest's (=), changed files. A
+branch of the tree without its worktree: its ref in tree."""
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import parts
@@ -10,7 +11,7 @@ man = parts.load()['parts']
 bad = 0
 for name, spec in parts.PARTS:
 	d = parts.where(spec, vals)
-	s = parts.state(d)
+	s = parts.state(d, name, vals)
 	if s is None:
 		print('%-18s %-10s %-12s %s' % (name, '-', 'no repository', d))
 		continue
@@ -20,9 +21,12 @@ for name, spec in parts.PARTS:
 	elif m['commit'] == s['commit']:
 		mark = '='
 	else:
-		ahead = parts.git(d, 'rev-list', '--count', '%s..HEAD' % m['commit'])
-		mark = ('+%s' % ahead) if ahead is not None and parts.git(d, 'merge-base', '--is-ancestor', m['commit'], 'HEAD') is not None else 'differs'
+		g, h = s['gitdir'], s['head']
+		ahead = parts.git(g, 'rev-list', '--count', '%s..%s' % (m['commit'], h))
+		mark = ('+%s' % ahead) if ahead is not None and parts.git(g, 'merge-base', '--is-ancestor', m['commit'], h) is not None else 'differs'
 		bad += 1
 	dirty = (' %d changed' % s['dirty']) if s['dirty'] else ''
+	if not s['worktree']:
+		dirty += ' (no worktree: the branch in tree)'
 	print('%-18s %-10s %-12s %s%s' % (name, s['branch'], s['commit'][:10], mark, dirty))
 sys.exit(1 if bad else 0)
