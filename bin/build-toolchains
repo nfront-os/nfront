@@ -53,12 +53,23 @@ step(){
 	fi
 	if [ $dry = 1 ]; then echo "step  $name: $*"; return 0; fi
 	t=$(date +%s)
+	touch "$LOGS/.start"
 	echo "$(date +%H:%M) start $name"
 	if "$@" > "$LOGS/$name.log" 2>&1; then
 		echo "$(date +%H:%M) ok    $name ($(( ($(date +%s) - t) / 60 )) min)"
 	else
 		echo "$(date +%H:%M) FAIL  $name (log $LOGS/$name.log)"
 		tail -20 "$LOGS/$name.log"
+		# steps that keep logs of their own (build-llvm.sh, build-cargo.sh, gcc's
+		# build.sh): those written during the step, the newest one's end
+		mapfile -t own < <(find "$GCC_DIR" -maxdepth 1 -name '*.log' -newer "$LOGS/.start"; \
+			find "$RUST_DIR/logs" "$GO_DIR" -maxdepth 1 -name '*.log' -newer "$LOGS/.start" 2>/dev/null)
+		if [ ${#own[@]} -gt 0 ]; then
+			echo "logs written by the step: ${own[*]}"
+			newest=$(ls -t "${own[@]}" | head -1)
+			echo "== end of $newest"
+			tail -20 "$newest"
+		fi
 		echo "after a fix: $0 -from $name ${arches[*]}"
 		exit 1
 	fi
