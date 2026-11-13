@@ -18,7 +18,7 @@
 		},
 		"mcp": {
 			"branch": "main",
-			"commit": "56f49153d101bd3545e5028d2c448ed385efd141",
+			"commit": "ea6f2203b2492c0ce5d4ed0b6597319b293e055e",
 			"path": "MCP_DIR"
 		},
 		"plan9port": {
@@ -43,27 +43,27 @@
 		},
 		"tree": {
 			"branch": "main",
-			"commit": "7e228c56fed9ed06c26578856171795d7c768624",
+			"commit": "d92fd6c22eea437f8d4e5e2e549449d5866c1da8",
 			"path": "TREE"
 		},
 		"tree-gcc": {
 			"branch": "gcc",
-			"commit": "b7f15db6a829b5144cc0c7281d97e483178f0e4d",
+			"commit": "7e31bbb806d6324b6b81d84bdec5ccc78f521bbe",
 			"path": "TREE_GCC"
 		},
 		"tree-nix": {
 			"branch": "nix",
-			"commit": "80de19da42ac944a7f03ee9ae8b7a3a85f0b591f",
+			"commit": "ef4f803bb3c4b4a2f5e9c23e01d037b4f4188270",
 			"path": "TREE_NIX"
 		},
 		"tree-riscv": {
 			"branch": "riscv",
-			"commit": "4f296917c7c1b3142c8790360090cb1baf9955ee",
+			"commit": "9cd17408dc5b4fe18a6dadb641b0be31f6b95a7b",
 			"path": "TREE_RISCV"
 		},
 		"tree-upstream": {
 			"branch": "upstream",
-			"commit": "edaf0ee0e9bb6508e029306acaa776587258cc71",
+			"commit": "7e9a98017f0398e8aa26ebe447426489f01caad5",
 			"path": "TREE_UPSTREAM"
 		}
 	}
