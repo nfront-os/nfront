@@ -67,15 +67,15 @@ and stops at the first failure, showing the end of its log:
 | Step | Runs | Time here |
 |---|---|---|
 | `tree-first` | `dist/bin/build-all`: the tree without the toolchains (gcc's cross compiler is built against its libraries) | 10 min |
-| `gcc-A` | `toolchain/gcc`: `objtype=A ./build.sh cross hostlibs native plan9` | 15 min per arch |
+| `gcc-A` | `toolchain/gcc`: `objtype=A ./build.sh cross hostlibs native plan9` | 10 min per arch |
 | `rust-stage1` | `toolchain/rust/rust`: `./x build --stage 1 library --target <Linux and the arches>` (downloads Rust's stage-0 compiler and its LLVM) | 10 min |
 | `llvm-A` | `objtype=A scripts/build-llvm.sh`: LLVM for 9front | 15 min per arch |
 | `rustc-A` | `./x build --stage 2 --host T --target T compiler/rustc src/tools/rustdoc src/tools/rustfmt src/tools/clippy` | 10–25 min per arch |
 | `stage1-again-A` | `./x build --stage 1 library …` (stage 2 removed the other targets' std) | 1 min |
 | `cargo-A` | `objtype=A scripts/build-cargo.sh`: cargo for 9front | 5 min |
 | `install-A` | `objtype=A scripts/install.sh`: `out/A`, which is `/A/rust` on 9front | 1 min |
-| `go-A` | `toolchain/go`: `objtype=A scripts/build.sh && scripts/install.sh` (the host Go only for the first arch) | 5 min |
-| `tree` | `dist/bin/build-all` again, now with the APE parts (Mesa, Wayland, SDL3, …) and the Rust programs (wsys, term, ui) | 15 min |
+| `go-A` | `toolchain/go`: `objtype=A scripts/build.sh && scripts/install.sh` (the host Go only for the first arch) | 1–3 min |
+| `tree` | `dist/bin/build-all` again, now with the APE parts (Mesa, Wayland, SDL3, …) and the Rust programs (wsys, term, ui) | 10 min |
 
 A is amd64, 386, arm64; T is the Rust target (`x86_64-unknown-plan9`,
 `i686-unknown-plan9`, `aarch64-unknown-plan9`). `dist/bin/build-toolchains -n`
@@ -160,7 +160,7 @@ boot loader and the boot questions are visible. `aux/virtiogpu` drives both.
 For example, the CD with virtio-gpu:
 
 ```sh
-qemu-system-x86_64 -enable-kvm -m 4096 -cdrom ~/.cache/9front-cli/9front.amd64.iso \
+qemu-system-x86_64 -enable-kvm -m 4096 -cdrom ~/.cache/9front-cli/nfront-full.amd64.iso \
 	-vga none -device virtio-vga
 ```
 
@@ -186,8 +186,8 @@ dist/bin/mkcd -ini 'monitor=virtiogpu' full    # or vesa, i915, amdgpu
 A CD without the GPU stack (`minimal`, `ui`) asks only for VESA's kinds of
 screen. If `monitor` names a GPU driver anyway, it says so and takes VESA.
 
-The guest that makes the CD holds the whole image in memory: `mkiso.sh` gives
-it 6 GB (`MEM=` to change).
+The guest that makes the CD holds the whole image in memory: it gets 6 GB
+(`MEM=` to change; `mkcd` runs `tree/scripts/guest/mkiso.sh`).
 
 ## 5. Tests
 
@@ -197,6 +197,9 @@ bash tests/static/run.sh       # seconds: manifests, licences, layouts (needs th
 bash tests/run.sh guest boot   # the system boots and works in QEMU
 bash tests/gpu/run.sh          # ~1 h: LinuxKPI selftests, virtio-gpu, Vulkan, GL, wsys (needs a host GPU)
 ```
+
+The CD tests (`bash tests/run.sh iso`) make a CD of their own; to test a
+profile's CD instead: `ISO=~/.cache/9front-cli/nfront-ui.amd64.iso bash tests/run.sh iso`.
 
 Only one guest at a time: they share `~/.cache/9front-cli`.
 
@@ -235,6 +238,6 @@ that the patches lack.
   (cd tree-riscv && CC=gcc ARCH=riscv64 sys/src/cmd/build/build.exe)
   (cd toolchain/gcc && objtype=riscv64 ./build.sh cross hostlibs native plan9)   # ~30 min
   ```
-- **Self-hosting**: the tree built inside 9front with 9front-gcc,
+- **Self-hosting**: the tree built inside 9front with the native gcc,
   `tree/scripts/guest/build-self.sh`.
 - **Real hardware** (VFIO GPU tests): `tree/tests/README.md`.

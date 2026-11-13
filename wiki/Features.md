@@ -13,6 +13,7 @@ State of `main`, November 2026. "QEMU" means tested in `tests/` under QEMU,
 | Self-hosting: the tree builds itself on 9front with the native gcc | QEMU (`scripts/guest/build-self.sh`) |
 | APE with C99/C11, POSIX.1-2008, pthreads, ptys, eventfd, memfd | QEMU |
 | Install/live CD, hybrid BIOS/UEFI/USB | QEMU, hardware |
+| Installation profiles: `minimal`, `gpu`, `ui`, `full`, gcc/Rust/Go as an option of each (`dist/bin/mkcd`) | QEMU (minimal, gpu, ui) |
 
 ## Toolchains on 9front
 

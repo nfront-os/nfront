@@ -14,7 +14,7 @@ All of it lives in one directory, `~/Devel/nfront`; each part is a git repositor
 | [[Repositories]] | the git repositories and what each holds |
 | [[Branches]] | branches and how they stack |
 | [[Host-requirements]] | what the Linux host needs |
-| [[Building]] | from a Linux host to an ISO, step by step |
+| [[Building]] | from a Linux host to an install CD, step by step; the installation profiles |
 | [Using gcc, Rust and Go](Toolchains) | the toolchains on 9front and from Linux; rebuilding the system with gcc |
 | [[Features]] | what works today, and where |
 
