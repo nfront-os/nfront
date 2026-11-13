@@ -8,7 +8,7 @@
 		},
 		"go": {
 			"branch": "main",
-			"commit": "b57fe833471fbeb2393740bbd31fbb396f9bf051",
+			"commit": "772d28f77fe211d10bf66a6a40b7bd62a8781d2d",
 			"path": "GO_DIR"
 		},
 		"go/go": {
@@ -43,12 +43,12 @@
 		},
 		"tree": {
 			"branch": "main",
-			"commit": "4d7b9823d58b35804761d0fde5570123d343c7a5",
+			"commit": "263f2cbae712aee36997f14d3fb5115d5af6cbf4",
 			"path": "TREE"
 		},
 		"tree-gcc": {
 			"branch": "gcc",
-			"commit": "7e31bbb806d6324b6b81d84bdec5ccc78f521bbe",
+			"commit": "b1371e92b1b816b0bdf36258b20ee7c18ce53f15",
 			"path": "TREE_GCC"
 		},
 		"tree-nix": {
@@ -63,7 +63,7 @@
 		},
 		"tree-upstream": {
 			"branch": "upstream",
-			"commit": "7e9a98017f0398e8aa26ebe447426489f01caad5",
+			"commit": "7bc54455d0d76c57f5417cbad52fd90d002d90c1",
 			"path": "TREE_UPSTREAM"
 		}
 	}
