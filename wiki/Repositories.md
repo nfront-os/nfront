@@ -1,7 +1,9 @@
 # Repositories
 
-Layout of `~/Devel/nfront` (each entry below is a git repository; worktrees
-of `tree` are left out, see [[Branches]]):
+Layout of `~/Devel/nfront` (each entry below is a git repository). `tree` has
+`main` checked out; its other branches (`gcc`, `nix`, `riscv`, `upstream`) are
+refs in the same repository, with a worktree beside it only when one works on
+them (see [[Branches]]):
 
 ```
 nfront/
@@ -28,7 +30,7 @@ nfront/
 | `toolchain/go` | `patches/go`, `scripts/build.sh`, `install.sh`, tests | go1.27.3 |
 | `toolchain/go/go` | Go's release archive (`fetch.sh`) as a repository; the port on branch `plan9` | go1.27.3 |
 | `tools/plan9port` | rc, yacc and the generators of the host build (`PLAN9PORT`); 9fans' repository, unchanged: its `INSTALL` writes the install path into ~75 files, `bin/repos` knows that | github.com/9fans/plan9port |
-| `tools/mcp` | `9front-mcp`: lets an agent on Linux work on a 9front system (read, write, edit, glob, grep, rc) | — |
+| `tools/mcp` | `9front-mcp`: lets an agent on Linux work on a 9front system (read, write, edit, glob, grep, rc); on the CD with `dist/bin/mkcd -mcp` | — |
 
 Outside nfront, referenced by `dist/paths.env`:
 
@@ -41,17 +43,21 @@ Show every part against the manifest:
 
 ```sh
 $ dist/bin/status
-tree               main       fc5380bd2c   =
-tree-gcc           gcc        b7f15db6a8   =
-tree-nix           nix        80de19da42   =
-tree-riscv         riscv      4f296917c7   =
-tree-upstream      upstream   edaf0ee0e9   =
-gcc                main       83a2ebbd7c   =
-rust               main       fec0fb3653   +2 32 changed
+tree               main       a96ee0111e   =
+tree-gcc           gcc        7e31bbb806   = (no worktree: the branch in tree)
+tree-nix           nix        ef4f803bb3   = (no worktree: the branch in tree)
+tree-riscv         riscv      9cd17408dc   = (no worktree: the branch in tree)
+tree-upstream      upstream   7e9a98017f   = (no worktree: the branch in tree)
+gcc                main       ae85fdbbe5   =
+rust               main       69dd67cea6   =
+rust/rust          plan9      1c3e87b4da   = 1 changed
 ...
 ```
 
-`=`: at the pinned commit; `+N`: N commits after it; `dist/bin/pin` pins the current heads.
+`=`: at the pinned commit; `+N`: N commits after it; `N changed`: tracked files
+changed (for `rust/rust` cargo's `Cargo.lock`, which the build rewrites; for
+`plan9port` the paths its `INSTALL` writes). `dist/bin/pin` pins the current
+heads; a part that is not there keeps its pin.
 
 Paths: never written into scripts. The tree reads them with
 `scripts/lib/paths.sh` / `paths.py`, each toolchain with

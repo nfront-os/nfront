@@ -13,15 +13,15 @@ State of `main`, November 2026. "QEMU" means tested in `tests/` under QEMU,
 | Self-hosting: the tree builds itself on 9front with the native gcc | QEMU (`scripts/guest/build-self.sh`) |
 | APE with C99/C11, POSIX.1-2008, pthreads, ptys, eventfd, memfd | QEMU |
 | Install/live CD, hybrid BIOS/UEFI/USB | QEMU, hardware |
-| Installation profiles: `minimal`, `gpu`, `ui`, `full`, gcc/Rust/Go as an option of each (`dist/bin/mkcd`) | QEMU (minimal, gpu, ui) |
+| Installation profiles: `minimal`, `gpu`, `ui`, `full`, gcc/Rust/Go and the MCP server as options of each (`dist/bin/mkcd`) | QEMU: all four boot; `full` CD and USB, BIOS and UEFI, rio, USB, gcc, Go, Rust tests |
 
 ## Toolchains on 9front
 
 | Toolchain | Targets | Notes |
 |---|---|---|
 | gcc 16.2, binutils 2.47 | amd64, 386, arm64, riscv64 | C, C++ (libstdc++); `gccmk` runs 9front's mkfiles with gcc |
-| Rust | x86_64, i686, aarch64 (`*-unknown-plan9`); riscv64 cross only | std, cargo, rustdoc, rustfmt, clippy |
-| Go 1.27.3 | plan9/amd64, 386, arm64 (arm64 new) | cgo with the native gcc |
+| Rust | x86_64, i686, aarch64 (`*-unknown-plan9`); riscv64 cross only | std, cargo, rustdoc, rustfmt, clippy; cargo fetches from crates.io (the CD's CA roots) |
+| Go 1.27.3 | plan9/amd64, 386, arm64 (arm64 new) | cgo with the native gcc; modules from the proxy over https |
 
 ## Graphics
 
@@ -49,6 +49,6 @@ State of `main`, November 2026. "QEMU" means tested in `tests/` under QEMU,
 
 | Feature | Example |
 |---|---|
-| MCP server: an agent on Linux works on 9front | `GOOS=plan9 GOARCH=amd64 go build -o 9front-mcp .` in `tools/mcp` |
+| MCP server: an agent on Linux works on 9front | on the CD: `dist/bin/mkcd -mcp PROFILE`; by hand: `GOOS=plan9 GOARCH=amd64 go build -o 9front-mcp .` in `tools/mcp` |
 | Guest control for debugging | `scripts/debug/qemu-ctl.py DIR shot` |
 | Test suites | `tests/static`, `tests/gpu`, `tests/guest`, … (`tests/README.md`) |
