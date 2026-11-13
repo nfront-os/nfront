@@ -59,6 +59,7 @@ pacman -S --needed rustup cmake ninja && rustup default stable
 | qemu-system-x86_64, -i386, -aarch64, qemu-img; KVM | `scripts/guest/*` (boot loaders, CD), all guest tests | QEMU 11.1 |
 | Harvey's `ufs` (`go install github.com/Harvey-OS/ninep/cmd/ufs@latest`; `~/go/bin/ufs` or on `PATH`) | serves the guest's root from the host (`boot-cli.sh`) | |
 | grub (`grub-mkrescue`) | the guest's multiboot ISO (`boot-cli.sh`, amd64 and 386) | |
+| rsync | the guest's root, kept between boots: only what differs is written (`gen-ufs-root.sh`) | |
 | edk2 OVMF (`/usr/share/edk2/x64/OVMF_CODE.4m.fd`, or `OVMF_CODE=`) | UEFI boots (`UEFI=1`, `tests/iso`) | |
 | mtools (`mcopy`, `mformat`) | FAT images for guests | |
 | e2fsprogs (`mkfs.ext4`, `debugfs`) | self-hosting build, toolchain tests in the guest | |
@@ -68,7 +69,7 @@ pacman -S --needed rustup cmake ninja && rustup default stable
 Arch Linux:
 
 ```sh
-pacman -S --needed qemu-full edk2-ovmf mtools e2fsprogs imagemagick libisoburn grub
+pacman -S --needed qemu-full edk2-ovmf mtools e2fsprogs imagemagick libisoburn grub rsync
 go install github.com/Harvey-OS/ninep/cmd/ufs@latest
 ```
 
