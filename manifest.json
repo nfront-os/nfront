@@ -3,12 +3,12 @@
 	"parts": {
 		"gcc": {
 			"branch": "main",
-			"commit": "7609505fd963ee50ba6d262a69d4bfd107615cf8",
+			"commit": "ba3d0204bc4994bd86971a68631c1ab748fd90ef",
 			"path": "GCC_DIR"
 		},
 		"go": {
 			"branch": "main",
-			"commit": "b3b184d60167932784d14dd4792834b560d9aad7",
+			"commit": "79609a89b6294667ad7bc0ef76a949a69ad9c492",
 			"path": "GO_DIR"
 		},
 		"go/go": {
@@ -21,29 +21,29 @@
 			"commit": "e1052a280093c263efc74f6f8fbd8a0440bbb716",
 			"path": "MCP_DIR"
 		},
+		"plan9port": {
+			"branch": "master",
+			"commit": "1f1396913fb5372408f442ed26933f5ae4b399cd",
+			"path": "PLAN9PORT"
+		},
 		"rust": {
 			"branch": "main",
-			"commit": "6080eadf12945fe28f968574d9f905fb8ce0373f",
+			"commit": "6bbb32d3b7cf69a24d8d801d0bdc245cdba39487",
 			"path": "RUST_DIR"
 		},
 		"rust/libc": {
 			"branch": "plan9",
-			"commit": "4f913ba3048f9ba1ad09dfbe9a03913f4c792e6d",
+			"commit": "4c22becd0b5d3049c5588ff2ccc5a888d0b0286b",
 			"path": "RUST_DIR/libc"
-		},
-		"rust/llvm-project": {
-			"branch": "main",
-			"commit": "b5a20db623e74e7941ef76472b85847f6409ac77",
-			"path": "RUST_DIR/llvm-project"
 		},
 		"rust/rust": {
 			"branch": "plan9",
-			"commit": "45256c1a94bd78f90ab5f470f00727ed70a6be67",
+			"commit": "1c3e87b4da948359e0c00656bf67942026818b10",
 			"path": "RUST_DIR/rust"
 		},
 		"tree": {
 			"branch": "main",
-			"commit": "39a6ee729509a34b0ea1b088bac1e2e18aad99ba",
+			"commit": "f33ca55c8cce2e4befae867e1655714f8df89ab2",
 			"path": "TREE"
 		},
 		"tree-gcc": {
