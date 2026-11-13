@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# mkcd [-dev LIST] [-ini 'name=value...'] [-o ISO] PROFILE [ARCH]: the install CD of
+# mkcd [-dev LIST] [-mcp] [-ini 'name=value...'] [-o ISO] PROFILE [ARCH]: the install CD of
 # one installation profile, from the main branch's build (dist/bin/build-all, or
 # build-toolchains); the system installed from the CD has what the CD has.
 #
@@ -12,20 +12,23 @@
 #   -dev LIST  the languages on the CD, any profile: gcc, rust, go, comma-separated,
 #              or all, or none. Default: all for full, none for the others.
 #              Rust links with gcc: rust takes gcc along
+#   -mcp       the MCP server too (tools/mcp: /$objtype/bin/9front-mcp, its deny list
+#              /sys/lib/mcp/deny), any profile
 #   -ini       lines name=value for the CD's plan9.ini (mkiso.sh's PLAN9INI),
 #              e.g. -ini 'monitor=virtiogpu'
-#   -o ISO     default $CLI_DIR/nfront-PROFILE[-dev-LIST].ARCH.iso
+#   -o ISO     default $CLI_DIR/nfront-PROFILE[-dev-LIST][-mcp].ARCH.iso
 #   ARCH       amd64 (default) or 386
 #
 # Takes a QEMU guest (one at a time: it shares CLI_DIR, nfront/cache/cli, with the others).
 set -e
 HERE=$(cd -P "$(dirname "$0")/.." && pwd -P)
-usage(){ echo "usage: mkcd [-dev gcc,rust,go|all|none] [-ini 'name=value'] [-o iso] minimal|gpu|ui|full [amd64|386]" >&2; exit 2; }
-dev=- ini= out=
+usage(){ echo "usage: mkcd [-dev gcc,rust,go|all|none] [-mcp] [-ini 'name=value'] [-o iso] minimal|gpu|ui|full [amd64|386]" >&2; exit 2; }
+dev=- ini= out= mcp=
 while [ $# -gt 0 ]; do
 	case $1 in
 	-dev)	[ $# -ge 2 ] || usage; dev=$2; shift 2 ;;
 	-ini)	[ $# -ge 2 ] || usage; ini=$2; shift 2 ;;
+	-mcp)	mcp=1; shift ;;
 	-o)	[ $# -ge 2 ] || usage; out=$2; shift 2 ;;
 	-*)	usage ;;
 	*)	break ;;
@@ -49,13 +52,14 @@ ROOT=$TREE
 . "$TREE/scripts/lib/paths.sh"	# CLI_DIR (paths.env)
 name=nfront-$profile
 [ -n "$dev" ] && [ $profile != full -o "$dev" != gcc,rust,go ] && name=$name-dev-${dev//,/-}
+[ -n "$mcp" ] && name=$name-mcp
 out=${out:-$CLI_DIR/$name.$arch.iso}
 
 # with build-all's lock: the CD is made from the tree's build
 exec 9>"$HERE/.build-all.lock"
 flock -n 9 || { echo "mkcd: build-all runs" >&2; exit 1; }
 
-echo "mkcd: $profile, languages: ${dev:-none}, $arch -> $out"
+echo "mkcd: $profile, languages: ${dev:-none}${mcp:+, MCP server}, $arch -> $out"
 cd "$TREE"
-PROFILE=$profile DEV=$dev PLAN9INI=$ini objtype=$arch scripts/guest/mkiso.sh "$out"
+PROFILE=$profile DEV=$dev MCP=$mcp PLAN9INI=$ini objtype=$arch scripts/guest/mkiso.sh "$out"
 ls -l "$out"

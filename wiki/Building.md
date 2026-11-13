@@ -121,11 +121,17 @@ The languages are an option of every profile: `-dev` takes `gcc`, `rust`,
 or Go the CD also gets the CA roots (`/sys/lib/tls/ca.pem`), so cargo and go
 can fetch crates and modules over https.
 
+`-mcp` puts the MCP server on the CD, with any profile: `/$objtype/bin/9front-mcp`
+(built with nfront's Go from `tools/mcp`) and its example deny list as
+`/sys/lib/mcp/deny`. It lets an agent on another machine work on the installed
+system; how to start it and what guards it: `tools/mcp/README.md`.
+
 ```sh
 dist/bin/mkcd minimal                         # nfront-minimal.amd64.iso
 dist/bin/mkcd -dev all minimal                # minimal with gcc, Rust and Go
 dist/bin/mkcd -dev rust gpu                   # nfront-gpu-dev-rust.amd64.iso
 dist/bin/mkcd -ini 'desktop=wsys' ui          # starts wsys instead of rio
+dist/bin/mkcd -mcp minimal                    # with the MCP server: nfront-minimal-mcp.amd64.iso
 dist/bin/mkcd -o /tmp/x.iso full 386          # 386 (no GPU stack there)
 ```
 

@@ -51,7 +51,7 @@ the attic into git: a copy of nfront must carry no GPL material.
 Docs: `dist/docs/roadmap.md` (phases, 1.0 criteria), `upstream.md` (bringing
 in 9front: front → gcc → main), `patches.md`; the plans (German) are kept
 outside git in `~/Devel/nfront-attic/dist-docs`.
-Logs of the work: `tree/MEMORY.md` (German, stays so: every branch edits it, a translation would conflict in each rebase), `toolchain/*/NOTES.md` (English).
+Logs of the work: `tree/MEMORY.md` (German, stays so: every branch edits it, a translation would conflict in each merge), `toolchain/*/NOTES.md` (English).
 
 ## Rules
 

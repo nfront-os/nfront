@@ -24,10 +24,13 @@ Bringing in 9front (details: `dist/docs/upstream.md`):
 cd tree
 git fetch origin front:front                  # fast-forward only
 git worktree add ../tree-gcc gcc              # gcc has no worktree: one for the while
-(cd ../tree-gcc && git rebase front)          # regenerate manifests, tests/static
+(cd ../tree-gcc && git merge front)           # tests/static, build, tests/run.sh boot
 git worktree remove ../tree-gcc
-git rebase gcc                                # main, here: build, tests/static, tests/gpu
+git merge gcc                                 # main, here: build, tests/static, tests/gpu
 ```
+
+9front comes in by merge: the public branches are never rewritten, so every
+clone fast-forwards. Only `upstream` (patches for 9front) is rebased.
 
 Work happens on `main`, in `tree`. The other branches are refs in the same
 repository; a worktree beside `tree` (`tree-gcc`, …) is made only to work on
