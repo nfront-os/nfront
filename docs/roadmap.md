@@ -19,7 +19,8 @@ replica and ISOs. 9front's `front` stays the source, brought in regularly
   from `distfiles.list` onto a CD with Rust or Go as `/sys/lib/tls/ca.pem`. It is a fixed
   state: before each release raise its entry in `distfiles.list` to curl's newest
   `cacert-DATE.pem` (https://curl.se/ca/); installed systems get no update of it
-  until there is an update path (replica/pull).
+  until there is an update path (replica/pull; there now: `pull(1)`, once
+  the update server runs).
 - Tests: `tests/static`, `tests/gpu/run.sh` (QEMU, ~140 checks), the
   RX 7600 by VFIO (`amdall.rc`); the laptop (i915) on Linux 7.3 green in its
   runs 9 and 10 (2026-11-11). What ran where: `hardware.md`.
@@ -33,9 +34,15 @@ replica and ISOs. 9front's `front` stays the source, brought in regularly
   Go `-s -w`). The release step (tag 0.1-preview) waits for the user.
 - Phase 1: wsys is the desktop of the profiles `ui` and `full`
   (`desktop=rio` chooses rio); the hardware matrix is `hardware.md`.
-  Open: replica + `pull` (where the update server lives is undecided; gefs
-  snapshots are the natural way back, hjfs has none), the reference
-  workflow as one test, a file manager.
+  Updates over HTTP (the user's choice): `pull(1)` runs replica/pull through
+  `replica/httpfs`, which serves the server's tree from a signed index
+  (RSA, SHA-256 per file; webfs checks no TLS certificate, so the signature
+  carries the trust); `tree/scripts/replica/publish.py` publishes a CD's tree
+  (`mkcd` with `REPLICA_ROOT`, `REPLICA_BASE`, `REPLICA_KEY`, channel
+  `current`), and the CD installs the client up to date. On gefs `pull`
+  snapshots `main` first, the way back; on hjfs what it replaces is gone.
+  `tests/replica` covers it. Open: the server's URL and its key (the
+  user's), the reference workflow as one test, a file manager.
 
 ## Phase 0: reference build (weeks)
 
@@ -55,7 +62,8 @@ Goal: a working day on the desktop.
 
 - wsys as the default; term, the ui programs, wbar, a theme.
 - draw(3), Wayland (foot) and Vulkan programs in daily use.
-- Replica + `pull` with a way back; channel `current`.
+- Replica + `pull` with a way back; channel `current` (done but for the
+  server's place and key, 2026-11-14).
 - Reference workflow without a browser: term, an editor (acme/sam), a file
   manager, a ui client, a draw(3) program, a Wayland program, 9P over the
   network.

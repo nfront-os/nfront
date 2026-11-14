@@ -19,6 +19,13 @@
 #   -o ISO     default $CLI_DIR/nfront-PROFILE[-dev-LIST][-mcp].ARCH.iso
 #   ARCH       amd64 (default) or 386
 #
+# With REPLICA_ROOT, REPLICA_BASE and REPLICA_KEY in the environment the CD's tree is
+# also published for pull(1) (updates over HTTP): in REPLICA_ROOT/current/NAME.ARCH,
+# which a web server serves as REPLICA_BASE/current/NAME.ARCH (NAME as the CD's,
+# channel current); REPLICA_KEY is the private key signing the index (kept outside
+# nfront; tree/scripts/replica/publish.py -g makes one). A CD without them has no
+# update server.
+#
 # Takes a QEMU guest (one at a time: it shares CLI_DIR, nfront/cache/cli, with the others).
 set -e
 HERE=$(cd -P "$(dirname "$0")/.." && pwd -P)
@@ -61,5 +68,10 @@ flock -n 9 || { echo "mkcd: build-all runs" >&2; exit 1; }
 
 echo "mkcd: $profile, languages: ${dev:-none}${mcp:+, MCP server}, $arch -> $out"
 cd "$TREE"
+if [ -n "$REPLICA_ROOT" ]; then
+	[ -n "$REPLICA_BASE" ] && [ -n "$REPLICA_KEY" ] || { echo "mkcd: REPLICA_ROOT needs REPLICA_BASE and REPLICA_KEY" >&2; exit 2; }
+	export REPLICA_DIR=$REPLICA_ROOT/current/$name.$arch REPLICA_URL=$REPLICA_BASE/current/$name.$arch
+	echo "mkcd: published for pull(1) in $REPLICA_DIR as $REPLICA_URL"
+fi
 PROFILE=$profile DEV=$dev MCP=$mcp PLAN9INI=$ini objtype=$arch scripts/guest/mkiso.sh "$out"
 ls -l "$out"
