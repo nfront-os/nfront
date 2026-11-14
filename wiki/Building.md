@@ -112,7 +112,7 @@ the CD, and so onto the system installed from it.
 |---|---|---|
 | `minimal` | 9front built with gcc: rio, VESA | 330 MB |
 | `gpu` | + the GPU stack: gpu(4)'s drivers (i915, amdgpu, virtiogpu), Mesa's Vulkan, the Vulkan programs | 1.3 GB |
-| `ui` | + the desktop: wsys, the ui framework, term, foot, Wayland, the TrueType fonts and themes; wsys composes on the processor | 670 MB |
+| `ui` | + the desktop: wsys, the ui framework, term, foot, Wayland, the TrueType fonts and themes; wsys composes on the processor and is the desktop (`desktop=rio` in plan9.ini: rio) | 670 MB |
 | `full` | `gpu` and `ui`, with gcc, Rust and Go | past 2 GB |
 
 The languages are an option of every profile: `-dev` takes `gcc`, `rust`,
@@ -130,7 +130,7 @@ system; how to start it and what guards it: `tools/mcp/README.md`.
 dist/bin/mkcd minimal                         # nfront-minimal.amd64.iso
 dist/bin/mkcd -dev all minimal                # minimal with gcc, Rust and Go
 dist/bin/mkcd -dev rust gpu                   # nfront-gpu-dev-rust.amd64.iso
-dist/bin/mkcd -ini 'desktop=wsys' ui          # starts wsys instead of rio
+dist/bin/mkcd -ini 'desktop=rio' ui           # rio instead of wsys, the ui CD's default
 dist/bin/mkcd -mcp minimal                    # with the MCP server: nfront-minimal-mcp.amd64.iso
 dist/bin/mkcd -o /tmp/x.iso full 386          # 386 (no GPU stack there)
 ```

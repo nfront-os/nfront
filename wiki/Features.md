@@ -38,7 +38,7 @@ State of `main`, November 2026. "QEMU" means tested in `tests/` under QEMU,
 
 | Feature | Status |
 |---|---|
-| **wsys**: window system in Rust; composes on the GPU (or the processor) | QEMU, hardware |
+| **wsys**: window system in Rust; composes on the GPU (or the processor); the desktop of the profiles `ui` and `full` (`desktop=rio` chooses rio) | QEMU, hardware |
 | draw(3) programs and rio in wsys (rio(4) files) | QEMU |
 | HiDPI (scale from `/dev/dpi`), themes, `wbar` | QEMU |
 | **ui**: widgets described through files (`ui(4)`), drawn by vello on wgpu or vello_cpu | QEMU |
