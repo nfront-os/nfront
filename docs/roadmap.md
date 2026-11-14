@@ -21,7 +21,21 @@ replica and ISOs. 9front's `front` stays the source, brought in regularly
   `cacert-DATE.pem` (https://curl.se/ca/); installed systems get no update of it
   until there is an update path (replica/pull).
 - Tests: `tests/static`, `tests/gpu/run.sh` (QEMU, ~140 checks), the
-  RX 7600 by VFIO (`amdall.rc`); the laptop (i915) untested since Linux 7.3.
+  RX 7600 by VFIO (`amdall.rc`); the laptop (i915) on Linux 7.3 green in its
+  runs 9 and 10 (2026-11-11). What ran where: `hardware.md`.
+
+## Progress (2026-11-14)
+
+- Phase 0 reached: `build-toolchains` from scratch; the four profiles' CDs
+  from one pinned state, each `iso` 7/7; the suites green but for two old
+  gaps (386: APE shared memory cannot grow; arm64: no segment(3) in the
+  kernel; `tree/MEMORY.md`). The userland builds with `-O2` (Rust thin LTO,
+  Go `-s -w`). The release step (tag 0.1-preview) waits for the user.
+- Phase 1: wsys is the desktop of the profiles `ui` and `full`
+  (`desktop=rio` chooses rio); the hardware matrix is `hardware.md`.
+  Open: replica + `pull` (where the update server lives is undecided; gefs
+  snapshots are the natural way back, hjfs has none), the reference
+  workflow as one test, a file manager.
 
 ## Phase 0: reference build (weeks)
 
