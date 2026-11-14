@@ -38,11 +38,15 @@ replica and ISOs. 9front's `front` stays the source, brought in regularly
   `replica/httpfs`, which serves the server's tree from a signed index
   (RSA, SHA-256 per file; webfs checks no TLS certificate, so the signature
   carries the trust); `tree/scripts/replica/publish.py` publishes a CD's tree
-  (`mkcd` with `REPLICA_ROOT`, `REPLICA_BASE`, `REPLICA_KEY`, channel
-  `current`), and the CD installs the client up to date. On gefs `pull`
-  snapshots `main` first, the way back; on hjfs what it replaces is gone.
-  `tests/replica` covers it. Open: the server's URL and its key (the
-  user's), the reference workflow as one test, a file manager.
+  (every `mkcd`: into `cache/replica/current/NAME.ARCH`, channel `current`,
+  signed with `~/.config/nfront/replica.pem`), and the CD installs the client
+  up to date. On gefs `pull` snapshots `main` first, the way back; on hjfs
+  what it replaces is gone. `tests/replica` covers it. The server does not
+  exist yet: the CDs ask a placeholder, `https://nfront-os.github.io/replica`
+  (GitHub, likely). For GitHub: files over 100 MB are refused there (the
+  `full` profile's rustc, rustdoc, clippy-driver are 147-161 MB stripped),
+  objects would need splitting, or another host. Open as well: the
+  reference workflow as one test, a file manager.
 
 ## Phase 0: reference build (weeks)
 

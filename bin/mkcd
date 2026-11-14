@@ -19,23 +19,25 @@
 #   -o ISO     default $CLI_DIR/nfront-PROFILE[-dev-LIST][-mcp].ARCH.iso
 #   ARCH       amd64 (default) or 386
 #
-# With REPLICA_ROOT, REPLICA_BASE and REPLICA_KEY in the environment the CD's tree is
-# also published for pull(1) (updates over HTTP): in REPLICA_ROOT/current/NAME.ARCH,
-# which a web server serves as REPLICA_BASE/current/NAME.ARCH (NAME as the CD's,
-# channel current); REPLICA_KEY is the private key signing the index (kept outside
-# nfront; tree/scripts/replica/publish.py -g makes one). A CD without them has no
-# update server.
+# The CD's tree is also published for pull(1) (updates over HTTP), unless -noreplica:
+# in REPLICA_ROOT/current/NAME.ARCH (dist/paths.env: cache/replica), which a web server
+# serves as REPLICA_BASE/current/NAME.ARCH (NAME as the CD's, channel current), and the
+# CD gets the client (/dist/replica) for that URL. REPLICA_KEY, the private key signing
+# the index, is kept outside nfront (default ~/.config/nfront/replica.pem; made on the
+# first run, tree/scripts/replica/publish.py -g). There is no server yet: REPLICA_BASE's
+# default is a placeholder (GitHub, likely), pull on such a CD fails to reach it.
 #
 # Takes a QEMU guest (one at a time: it shares CLI_DIR, nfront/cache/cli, with the others).
 set -e
 HERE=$(cd -P "$(dirname "$0")/.." && pwd -P)
-usage(){ echo "usage: mkcd [-dev gcc,rust,go|all|none] [-mcp] [-ini 'name=value'] [-o iso] minimal|gpu|ui|full [amd64|386]" >&2; exit 2; }
-dev=- ini= out= mcp=
+usage(){ echo "usage: mkcd [-dev gcc,rust,go|all|none] [-mcp] [-ini 'name=value'] [-o iso] [-noreplica] minimal|gpu|ui|full [amd64|386]" >&2; exit 2; }
+dev=- ini= out= mcp= replica=1
 while [ $# -gt 0 ]; do
 	case $1 in
 	-dev)	[ $# -ge 2 ] || usage; dev=$2; shift 2 ;;
 	-ini)	[ $# -ge 2 ] || usage; ini=$2; shift 2 ;;
 	-mcp)	mcp=1; shift ;;
+	-noreplica) replica=; shift ;;
 	-o)	[ $# -ge 2 ] || usage; out=$2; shift 2 ;;
 	-*)	usage ;;
 	*)	break ;;
@@ -68,9 +70,17 @@ flock -n 9 || { echo "mkcd: build-all runs" >&2; exit 1; }
 
 echo "mkcd: $profile, languages: ${dev:-none}${mcp:+, MCP server}, $arch -> $out"
 cd "$TREE"
-if [ -n "$REPLICA_ROOT" ]; then
-	[ -n "$REPLICA_BASE" ] && [ -n "$REPLICA_KEY" ] || { echo "mkcd: REPLICA_ROOT needs REPLICA_BASE and REPLICA_KEY" >&2; exit 2; }
-	export REPLICA_DIR=$REPLICA_ROOT/current/$name.$arch REPLICA_URL=$REPLICA_BASE/current/$name.$arch
+if [ -n "$replica" ]; then
+	# placeholder: no update server yet (GitHub, likely); the URL the CDs' pull(1) asks
+	REPLICA_BASE=${REPLICA_BASE:-https://nfront-os.github.io/replica}
+	REPLICA_KEY=${REPLICA_KEY:-${XDG_CONFIG_HOME:-$HOME/.config}/nfront/replica.pem}
+	if [ ! -f "$REPLICA_KEY" ]; then
+		mkdir -p "$(dirname "$REPLICA_KEY")"
+		python3 "$TREE/scripts/replica/publish.py" -g "$REPLICA_KEY" > /dev/null 2>&1 ||
+			{ echo "mkcd: cannot make the replica's key $REPLICA_KEY (openssl)" >&2; exit 1; }
+		echo "mkcd: made the replica's signing key $REPLICA_KEY (private: keep it, CDs carry its public half)"
+	fi
+	export REPLICA_KEY REPLICA_DIR=$REPLICA_ROOT/current/$name.$arch REPLICA_URL=$REPLICA_BASE/current/$name.$arch
 	echo "mkcd: published for pull(1) in $REPLICA_DIR as $REPLICA_URL"
 fi
 PROFILE=$profile DEV=$dev MCP=$mcp PLAN9INI=$ini objtype=$arch scripts/guest/mkiso.sh "$out"

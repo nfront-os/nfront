@@ -14,7 +14,7 @@ State of `main`, November 2026. "QEMU" means tested in `tests/` under QEMU,
 | APE with C99/C11, POSIX.1-2008, pthreads, ptys, eventfd, memfd | QEMU |
 | Install/live CD, hybrid BIOS/UEFI/USB | QEMU, hardware |
 | Installation profiles: `minimal`, `gpu`, `ui`, `full`, gcc/Rust/Go and the MCP server as options of each (`dist/bin/mkcd`) | QEMU: all four boot; `full` CD and USB, BIOS and UEFI, rio, USB, gcc, Go, Rust tests |
-| Updates over HTTP: `pull(1)` (replica/pull through `replica/httpfs`: a signed index, each file checked by SHA-256; a gefs snapshot first, the way back), published by `mkcd` with `REPLICA_ROOT` | QEMU (`tests/replica`); no public server yet |
+| Updates over HTTP: `pull(1)` (replica/pull through `replica/httpfs`: a signed index, each file checked by SHA-256; a gefs snapshot first, the way back), published by every `mkcd` | QEMU (`tests/replica`); no server yet, the CDs ask a placeholder URL (GitHub) |
 | gefs, the installer's default file system, built with gcc | QEMU (`tests/replica`: ream, snapshots) |
 
 ## Toolchains on 9front
